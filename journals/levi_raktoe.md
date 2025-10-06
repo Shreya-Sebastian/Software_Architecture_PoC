@@ -10,4 +10,14 @@ I messaged some people to complete our group. Wout joined.
 ### Week 2
 
 September 10th: Met with Archita, Shreya and Wout to discuss the plan for the TA meeting on Friday. We completed a rough outline.
+
 September 12th: Met before the meeting for finishing touches of the presentation.
+
+### Week 3
+Worked on the functional requirements, quality attributes, pricing model, domain model, scenarios and problem statement for the finch release.
+
+## Heron
+
+### Week 5
+
+September 29th: Met to discuss PoC ideas.
