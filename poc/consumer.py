@@ -6,8 +6,8 @@ RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'sensor_data_queue'
 
 def main():
-    """Connects to RabbitMQ and consumes messages from the queue."""
-    print("INFO: [Consumer] Waiting for messages. To exit press CTRL+C")
+    #Connects to RabbitMQ and consumes messages from the queue
+    print("INFO: [Consumer] Waiting for messages.")
     
     # Robust connection loop
     while True:

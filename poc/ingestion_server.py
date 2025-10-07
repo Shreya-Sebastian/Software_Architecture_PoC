@@ -6,7 +6,7 @@ from typing import List
 from datetime import datetime
 import uuid
 
-# --- Pydantic Models for Data Validation ---
+# Pydantic Models for Data Validation
 class SensorReading(BaseModel):
     reading_id: uuid.UUID
     sensor_id: str
@@ -14,21 +14,21 @@ class SensorReading(BaseModel):
     value: float
     timestamp: datetime
 
-# --- RabbitMQ Connection Setup ---
+# RabbitMQ Connection Setup
 RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'sensor_data_queue'
 
 def get_rabbitmq_connection():
-    """Establishes a connection to RabbitMQ."""
+    #Establishes a connection to RabbitMQ
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
     return connection
 
-# --- FastAPI Application ---
+# FastAPI Application
 app = FastAPI(title="Smarter Home Ingestion Service")
 
 @app.on_event("startup")
 def startup_event():
-    """On startup, ensure the RabbitMQ queue exists."""
+    #On startup, ensure the RabbitMQ queue exists
     try:
         connection = get_rabbitmq_connection()
         channel = connection.channel()
@@ -44,10 +44,8 @@ def startup_event():
 
 @app.post("/ingest/")
 def ingest_data(readings: List[SensorReading]):
-    """
-    Receives a list of sensor readings and publishes them to the message queue.
-    This endpoint is designed to be fast and non-blocking.
-    """
+    #Receives a list of sensor readings and publishes them to the message queue.
+  
     try:
         connection = get_rabbitmq_connection()
         channel = connection.channel()
@@ -76,5 +74,5 @@ def ingest_data(readings: List[SensorReading]):
 
 @app.get("/health")
 def health_check():
-    """Simple health check endpoint."""
+    #Simple health check endpoint
     return {"status": "ok"}

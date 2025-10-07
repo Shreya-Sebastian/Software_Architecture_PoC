@@ -3,6 +3,7 @@ import time
 import os
 import signal
 import sys
+import requests
 from sensor_simulator import Sensor
 
 #Config
@@ -27,7 +28,7 @@ def cleanup():
             print(f"Removed old buffer file: {file}")
 
 def start_services():
-    """Starts the ingestion server and consumer as background processes."""
+    #Starts the ingestion server and consumer as background processes
     print("Starting Background Services")
     # Start the FastAPI server
     server_process = subprocess.Popen(
@@ -39,13 +40,29 @@ def start_services():
         ["python", "consumer.py"],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
-    time.sleep(3) # Give services time to start up
-    print("Services Started")
+    
+    # Wait for the server to be ready
+    server_ready = False
+    for _ in range(20):  # Try for up to 10 seconds
+        try:
+            response = requests.get(f"http://{SERVER_HOST}:{SERVER_PORT}/health", timeout=0.5)
+            if response.status_code == 200:
+                print("Server is ready")
+                server_ready = True
+                break
+        except requests.exceptions.ConnectionError:
+            time.sleep(0.5) # Wait and retry
+    
+    if not server_ready:
+        print("server not ready yet")
+        return None, None 
+    
     return server_process, consumer_process
 
 def stop_services(server_process, consumer_process):
-    """Stops the background services."""
-    print("\n Stopping Background Services")
+    #Stops the background services
+    print("\nStopping Background Services")
+
     server_process.terminate()
     consumer_process.terminate()
     server_process.wait()
@@ -86,7 +103,7 @@ def main():
         time.sleep(PHASE_3_RESYNC_DURATION)
 
     except KeyboardInterrupt:
-        print("\n--- Test interrupted by user ---")
+        print("\n Test interrupted by user")
     finally:
         # Stop all sensor threads
         for sensor in sensors:
@@ -96,7 +113,7 @@ def main():
         stop_services(server_proc, consumer_proc)
 
         # Final check
-        print("\n--- Final PoC Verification ---")
+        print("\n Final PoC Verification")
         buffer_file = disconnected_sensor.buffer_file
         if not os.path.exists(buffer_file):
             print(f"SUCCESS - Buffer file '{buffer_file}' was successfully cleared.")
