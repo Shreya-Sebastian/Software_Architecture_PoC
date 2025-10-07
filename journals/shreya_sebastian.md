@@ -22,4 +22,10 @@ Septermber 29th: The main subject of our meeting was to finalize the PoC directi
 
 October 1st: We recieved feedback on our idea. First to be explicit about what the senosrs being "available" means to us.  We also got feedback that this can be well combined with some scalability patterns. 
 
+I worked on a PoC concept locally as it was difficult to schedule my team to meet and really finalize the PoC direction and ditribute tasks. I continued with the direction of proving system resilience during sensor failures and created a framework (2 hours). 
 
+## Week 6
+
+The way the PoC works is if a sensor can't connect, it stores its readings locally. Once it's back online, it sends all the saved data to a central server, which then passes the information to a processing system in an orderly way. This design is designed to handle temporary outages and smooth out data flow from the sensors without losing data. To prove the concept, I built a test script that displays different phases: a period of normal operation, a simulated disconnection of a single sensor—forcing it to buffer data locally—and finally, a reconnection phase (5 hours). 
+
+After working through some bugs, the simulation now runs successfully. It confirms that the disconnected sensor can upload its entire backlog of historical data without loss (1 hour).
