@@ -12,7 +12,7 @@ class Sensor:
     """
     A simulated sensor with 'store and forward' capability.
     - Generates data periodically.
-    - Tries to send data to the server.
+    - Tries to send data (and any existing backlog) to the server.
     - If sending fails, it buffers data to a local file.
     - Upon reconnection, it sends the buffered data.
     """
@@ -78,7 +78,8 @@ class Sensor:
             current_reading = self.generate_reading()
 
             if self.is_connected:
-                # If connected, try to send buffer first (resynchronize)
+                # When connected, try to send buffer first (resynchronize)
+                # If there is backlog in buffer
                 if self.buffer:
                     print(f"[{self.sensor_id}] INFO: Connection restored. Attempting to send {len(self.buffer)} buffered readings.")
                     # Send buffer in chunks to avoid large requests
@@ -93,7 +94,6 @@ class Sensor:
                         print(f"[{self.sensor_id}] WARNING: Failed to send buffer. Re-buffering data.")
                         # Put data back at the front of the deque
                         self.buffer.extendleft(reversed(buffer_batch))
-                        # Connection is likely lost again
                         self.is_connected = False
                         self._save_to_buffer(current_reading)
 

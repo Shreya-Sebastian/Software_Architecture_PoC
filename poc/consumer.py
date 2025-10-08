@@ -9,7 +9,7 @@ def main():
     #Connects to RabbitMQ and consumes messages from the queue
     print("INFO: [Consumer] Waiting for messages.")
     
-    # Robust connection loop
+    # Connection loop
     while True:
         try:
             connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
@@ -24,7 +24,7 @@ def main():
                 print(f"  [Consumer] <-- Received data from [{sensor_id}] at {timestamp}")
                 ch.basic_ack(delivery_tag=method.delivery_tag) # Acknowledge message processing
 
-            # Ensure fair dispatching
+            # Ensure balanced dispatching
             channel.basic_qos(prefetch_count=1)
             channel.basic_consume(queue=QUEUE_NAME, on_message_callback=callback)
             

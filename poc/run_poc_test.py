@@ -11,7 +11,7 @@ SERVER_PORT = 8000
 SERVER_URL = f"http://{SERVER_HOST}:{SERVER_PORT}/ingest/"
 
 NUM_SENSORS = 3
-DISCONNECTED_SENSOR_ID = "sensor-2"
+DISCONNECTED_SENSOR_ID = "sensor-1"
 
 #Test Durations (seconds)
 PHASE_1_NORMAL_DURATION = 10
@@ -60,8 +60,6 @@ def start_services():
 
 def stop_services(server_process, consumer_process):
     #Stops the background services
-    print("\nStopping Background Services")
-
     server_process.terminate()
     consumer_process.terminate()
     server_process.wait()
@@ -97,7 +95,6 @@ def main():
         print(f"\n Resynchronization & Load Test ({PHASE_3_RESYNC_DURATION}s)")
         print(f"Reconnecting sensor {disconnected_sensor.sensor_id}")
         print("Attempting to upload sensor's buffered data.")
-        print("Historical data is processed alongside real-time data from others.")
         disconnected_sensor.is_connected = True
         time.sleep(PHASE_3_RESYNC_DURATION)
 
@@ -112,7 +109,7 @@ def main():
         stop_services(server_proc, consumer_proc)
 
         # Final check
-        print("\n Final PoC Verification")
+        print("\n Final Verification")
         buffer_file = disconnected_sensor.buffer_file
         if not os.path.exists(buffer_file):
             print(f"SUCCESS - Buffer file '{buffer_file}' was successfully cleared.")
