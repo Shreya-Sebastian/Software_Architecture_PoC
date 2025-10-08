@@ -26,6 +26,6 @@ I worked on a PoC concept locally as it was difficult to schedule my team to mee
 
 ## Week 6
 
-The way the PoC works is if a sensor can't connect, it stores its readings locally. Once it's back online, it sends all the saved data to a central server, which then passes the information to a processing system in an orderly way. This design is designed to handle temporary sensor outages and smooth out data flow from the sensors without losing data. To prove the concept, I built a test script that displays different phases: a period of normal operation, a simulated disconnection of a single sensor—forcing it to buffer data locally—and finally, a reconnection phase (5 hours). 
+The way the PoC works is if a sensor can't connect, it stores its readings locally. Once it's back online, it sends all the saved data to a central server, which then passes the information to a processing system in an orderly way. This design is designed to handle temporary sensor outages and smooth out data flow from the sensors without losing data. To prove the concept, I built a test script that displays different phases: a period of normal operation, a simulated disconnection of a single sensor and a reconnection phase (5 hours). 
 
 After working through some bugs, the simulation now runs successfully. It confirms that the disconnected sensor can upload its entire backlog of historical data without loss (1 hour).
