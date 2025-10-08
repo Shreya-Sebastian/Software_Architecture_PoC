@@ -1,7 +1,6 @@
 ﻿import subprocess
 import time
 import os
-import signal
 import sys
 import requests
 from sensor_simulator import Sensor
@@ -12,15 +11,15 @@ SERVER_PORT = 8000
 SERVER_URL = f"http://{SERVER_HOST}:{SERVER_PORT}/ingest/"
 
 NUM_SENSORS = 3
-DISCONNECTED_SENSOR_ID = "sensor-1"
+DISCONNECTED_SENSOR_ID = "sensor-2"
 
 #Test Durations (seconds)
 PHASE_1_NORMAL_DURATION = 10
-PHASE_2_DISRUPTION_DURATION = 15
-PHASE_3_RESYNC_DURATION = 20
+PHASE_2_DISRUPTION_DURATION = 10
+PHASE_3_RESYNC_DURATION = 10
 
 def cleanup():
-    # Removes old buffer files
+    # Removes old buffer files if they exist
     print("Running Cleanup")
     for file in os.listdir("."):
         if file.startswith("buffer_") and file.endswith(".log"):
@@ -28,7 +27,7 @@ def cleanup():
             print(f"Removed old buffer file: {file}")
 
 def start_services():
-    #Starts the ingestion server and consumer as background processes
+    #Starts the background processes
     print("Starting Background Services")
     # Start the FastAPI server
     server_process = subprocess.Popen(
@@ -51,10 +50,10 @@ def start_services():
                 server_ready = True
                 break
         except requests.exceptions.ConnectionError:
-            time.sleep(0.5) # Wait and retry
+            time.sleep(0.5) # Wait and retry if not connected
     
     if not server_ready:
-        print("server not ready yet")
+        print("server not ready")
         return None, None 
     
     return server_process, consumer_process

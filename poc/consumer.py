@@ -17,7 +17,7 @@ def main():
             channel.queue_declare(queue=QUEUE_NAME, durable=True)
 
             def callback(ch, method, properties, body):
-                """Callback function to process a message."""
+                # Callback function to process a message
                 data = json.loads(body)
                 sensor_id = data.get('sensor_id', 'N/A')
                 timestamp = data.get('timestamp', 'N/A')
