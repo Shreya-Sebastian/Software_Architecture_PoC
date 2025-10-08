@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Request, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import pika
-import json
 from typing import List
 from datetime import datetime
 import uuid
