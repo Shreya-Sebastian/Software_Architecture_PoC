@@ -192,9 +192,15 @@ The PoC directly addresses two fundamental challenges in IoT systems:
 
 ### Architectural Solution
 
-To solve these problems, the PoC employs several architectural decisions:
 
-#### 1. Data Integrity
+The PoC architecture is as follows:
+
+![PoC architecture](images/PoC_Architecture.png)
+
+
+To solve the key problems mentioned, the PoC employs several architectural decisions:
+
+#### 1. Tackling the problem of Data Integrity
 
 - **Store and Forward Mechanism**  
   Sensors are designed to buffer data to a local file if they cannot connect to the ingestion server. This prevents data loss during network outages by storing it locally and forwarding it once the connection is re-established.
@@ -211,15 +217,15 @@ To solve these problems, the PoC employs several architectural decisions:
 - **Data Validation at Entry**  
   The ingestion server uses **Pydantic models** to validate the structure and data types of all incoming data. This acts as a gateway, preventing corrupted or malformed data from ever entering the message queue and the rest of the processing pipeline.
 
-#### 2. Scalability
+#### 2. Addressing Scalability
 
-- **Asynchronous, Decoupled Architecture**  
+- **Decoupled Architecture**  
   The message queue is the central element that allows components to scale independently. The ingestion server can handle a high volume of incoming sensor data without being slowed down by the consumer's processing speed. The queue absorbs traffic bursts, allowing the system to handle load gracefully.
 
 - **Horizontal Consumer Scaling**  
   The architecture allows for running multiple instances of the consumer process. Each consumer can work on messages from the same queue in parallel, allowing the data processing capacity to be scaled up or down simply by adding or removing consumer instances.
 
-- **Fair Load Distribution**  
+- **Balanced Load Distribution**  
   The consumer is configured with a `prefetch_count` of 1. When multiple consumers are running, this setting ensures that each consumer is only working on one message at a time, preventing a single fast consumer from hoarding all the messages and allowing for an even distribution of work.
 
 - **Lightweight, Stateless Ingestion Server**  
