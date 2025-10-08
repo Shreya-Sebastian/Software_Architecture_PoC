@@ -38,7 +38,6 @@ def startup_event():
         print("INFO: RabbitMQ queue 'sensor_data_queue' is ready.")
     except pika.exceptions.AMQPConnectionError:
         print("ERROR: Could not connect to RabbitMQ. Please ensure it's running.")
-        # In a real app, you might want to exit or have a retry mechanism.
         exit(1)
 
 
@@ -67,12 +66,10 @@ def ingest_data(readings: List[SensorReading]):
             messages_published += 1
         except Exception as e:
             print(f"ERROR: Failed to publish message: {e}")
-            # Here you could implement more robust error handling, e.g., a dead-letter queue.
 
     connection.close()
     return {"status": "accepted", "published_count": messages_published}
 
 @app.get("/health")
 def health_check():
-    #Simple health check endpoint
     return {"status": "ok"}
