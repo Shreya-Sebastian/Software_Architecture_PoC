@@ -158,6 +158,8 @@ The following quality attributes define the non-functional requirements of the S
 
 **Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
 
+**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients.
+
 ### Privacy vs. Correctness
 
 Privacy is a main concern with smart home systems, due to the large amounts of data IoT sensors collect inside users' homes. This data might not be immediately sensitive, but can present security concerns in aggregate. The routines can only be accurately identified based on accurate data, and privacy is therefore a direct tradeoff with the correctness of the system. By being completely transparent about the data collected, and allowing the user to inspect this data, they are empowered to make a more informed decision about the data they want recorded and or stored.
@@ -169,6 +171,33 @@ Security is a key concern for smart home systems in general. Firstly, this is be
 #### Security vs. Extensibility
 
 As every device connected to the system is an avenue for attack, constraints need to be placed on what devices may access the Smarter Home. This means that devices may enter the market that cannot be supported without compromising security. To make sure our goals regarding security and thereby privacy and availability are met we can only allow connections with devices that are considered secure.
+
+## System level architecture
+
+Now that the quality attributes are defined, we continue with a discussion of different types of architectures at the system level. We will select them with the quality attributes in mind.
+
+### Monolithic Architecture
+
+In a monolithic architecture, the whole system is built as a single deployable unit. The logic runs in a single process and the application may be modularized by simply using features of the programming language, but in general, remains tightly coupled. Due to its simplicity, a monolithic architecture has the following advantages:
+
+1. **Simple development:** Monolithic architectures are constructed with one codebase, making them easier to build. Testing the system as as whole is also easier, as the whole of the system could be run from a single instance. Lastly, deployment is also simplified as the system works with a single executable or directory.
+2. **Security:** Data is processed inside a closed system, which makes it harder for cyberthreats to access it from the outside.
+
+However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures.[1][2]
+
+### Microkernel Architecture
+
+In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes require a complete redeployment.[3]
+
+### Microservice Architecture
+
+In a microservice architecture, the system is split into "independently deployable, loosely coupled, components, a.k.a. services."[4] Each service runs in its own process and is responsible for its own subdomain. This division makes a microservice architecture extremely friendly to change. Individual components can be updated, tested and deployed without intruding on the functionality of others, allowing continuous delivery. Furthermore, when a single service fails, the other service may stay running.
+
+However, when looking at the system as a whole, microservices do introduce complexity, mainly in the communication between services. There are increased security risks, because data is now processed over multiple services potentially opening up more avenues to attack.
+
+### Conclusion
+
+We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
 
 ## Pricing model
 
