@@ -223,9 +223,19 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
+
+## Cloud vs on Premises Development 
+
+There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware. 
+
+For a public cloud model, the problem of scalability is solved as it makes use of a provider that is wholy dedicated to scaling. The problems of sovereignty and user privacy still persist as this model forces all sensitive user data to reside on third-party servers. 
+
+A Hybrid approach would be ideal as real-time tasks can be handeled locally and less sensitive/heavier computation can be handeled on the cloud. In this manner, high sovereignty and user privacy can be maintained while still benefitting from public cloud services.
+
+
 ## Proof of Concept
 
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions.
+The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture. 
 
 
 ### Problems Addressed
@@ -277,7 +287,7 @@ To solve the key problems mentioned, the PoC employs several architectural decis
 - **Balanced Load Distribution**  
   The consumer is configured with a `prefetch_count` of 1. When multiple consumers are running, this setting ensures that each consumer is only working on one message at a time, preventing a single fast consumer from hoarding all the messages and allowing for an even distribution of work.
 
-- **Lightweight, Stateless Ingestion Server**  
+- **Lightweight Ingestion Server**  
   The ingestion server's role is minimal: accept, validate, and forward. By offloading processing to the consumers, the server remains lightweight and can handle a high number of concurrent HTTP connections, making the data ingestion point highly scalable.
 
 
