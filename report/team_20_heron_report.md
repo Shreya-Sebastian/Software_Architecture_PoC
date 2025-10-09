@@ -221,6 +221,10 @@ This system uses a combination of local and cloud processing. Local hubs perform
 
 Devices train local model updates from local data. Only the gradients are sent to the central server which builds the global model. This system offers good privacy since no raw data is sent to the server. It also allows cross-home learning. But the system is complex and hard to debug. It requires heavy coordination and is very reliant on network connection. It also has heterogenous device problems.
 
+### Trade-off analysis
+
+Each system has its own pros and cons. The cloud centralized system might be able to handle complex ML models and can be easier to scale but it also raises the issue of privacy, while the edge processing system offers privacy and is cost friendly but cannot handle complex models and is harder to scale. The hybrid and decentralized systems solve these problems but also offer different issues. The decentralized system offers privacy but cryptographic measures need to be taken on the aggregate data sent to the server. The system is also complex and hard to implement. 
+
 ## Pricing model
 
 The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
