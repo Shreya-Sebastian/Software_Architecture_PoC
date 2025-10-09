@@ -199,6 +199,28 @@ However, when looking at the system as a whole, microservices do introduce compl
 
 We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
 
+## Architectural decision with alternatives
+
+There are plenty of architectural decisions to be made in this system. One of the key architectural decisions is the data processing location since this influences the privacy, scalability and robustness of the system.
+
+## Data Processing Location
+
+### Edge Only (Local hubs processing everything)
+
+All tasks such as collection of events data, pattern detection, event automation are done locally. The data is stored is stored locally and processing is done with a local hub (home server). This provides maximum privacy, low latency between event and automation and robust to internet outages. However, it also means that it offers limited compute with respect to more complex and large models. It is also harder to upgrade ML models and it’s required to test more device heterogeneity.
+
+### Cloud centralized processing
+
+Raw events are streamed to a centralized cloud where pattern detection, ML training and other processing are run. This means that it can run powerful compute on complex models, have easier model updates, and simpler device code. But, it also means that there is a privacy risk since raw data is sent to the cloud. Another problem is that this system would be overly reliant on network and there would be high latency for real-time automations. It also has a high operational cost.
+
+### Hybrid
+
+This system uses a combination of local and cloud processing. Local hubs perform data preprocessing and some pattern detection. The cloud receives summaries and model weights and aggregates for heavy model training like cross-household learning. Automations can be executed locally or via cloud depending on the user’s decision. This system is designed so that the raw-data is stored locally. It also allows powerful models for global improvements. It has less latency for automation and the design is also scalable. However, it has a more complex architecture and needs a secure channel.
+
+### Decentralized Learning
+
+Devices train local model updates from local data. Only the gradients are sent to the central server which builds the global model. This system offers good privacy since no raw data is sent to the server. It also allows cross-home learning. But the system is complex and hard to debug. It requires heavy coordination and is very reliant on network connection. It also has heterogenous device problems.
+
 ## Pricing model
 
 The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
