@@ -158,6 +158,8 @@ The following quality attributes define the non-functional requirements of the S
 
 **Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
 
+**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients.
+
 ### Privacy vs. Correctness
 
 Privacy is a main concern with smart home systems, due to the large amounts of data IoT sensors collect inside users' homes. This data might not be immediately sensitive, but can present security concerns in aggregate. The routines can only be accurately identified based on accurate data, and privacy is therefore a direct tradeoff with the correctness of the system. By being completely transparent about the data collected, and allowing the user to inspect this data, they are empowered to make a more informed decision about the data they want recorded and or stored.
@@ -170,9 +172,56 @@ Security is a key concern for smart home systems in general. Firstly, this is be
 
 As every device connected to the system is an avenue for attack, constraints need to be placed on what devices may access the Smarter Home. This means that devices may enter the market that cannot be supported without compromising security. To make sure our goals regarding security and thereby privacy and availability are met we can only allow connections with devices that are considered secure.
 
+## System level architecture
+
+Now that the quality attributes are defined, we continue with a discussion of different types of architectures at the system level. We will select them with the quality attributes in mind.
+
+### Monolithic Architecture
+
+In a monolithic architecture, the whole system is built as a single deployable unit. The logic runs in a single process and the application may be modularized by simply using features of the programming language, but in general, remains tightly coupled. Due to its simplicity, a monolithic architecture has the following advantages:
+
+1. **Simple development:** Monolithic architectures are constructed with one codebase, making them easier to build. Testing the system as as whole is also easier, as the whole of the system could be run from a single instance. Lastly, deployment is also simplified as the system works with a single executable or directory.
+2. **Security:** Data is processed inside a closed system, which makes it harder for cyberthreats to access it from the outside.
+
+However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures.[1][2]
+
+### Microkernel Architecture
+
+In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes require a complete redeployment.[3]
+
+### Microservice Architecture
+
+In a microservice architecture, the system is split into "independently deployable, loosely coupled, components, a.k.a. services."[4] Each service runs in its own process and is responsible for its own subdomain. This division makes a microservice architecture extremely friendly to change. Individual components can be updated, tested and deployed without intruding on the functionality of others, allowing continuous delivery. Furthermore, when a single service fails, the other service may stay running.
+
+However, when looking at the system as a whole, microservices do introduce complexity, mainly in the communication between services. There are increased security risks, because data is now processed over multiple services potentially opening up more avenues to attack.
+
+### Conclusion
+
+We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
+
 ## Pricing model
 
 The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
+
+## Selecting Open Source Components
+
+The Smarter Home system can and should benefit greatly from existing open-source technologies, which offer a solid foundation for building the reliable and flexible smart home solutions. Open-source tools have multiple advantages such as being well-tested, widely supported and that they are freely available. This is making them an ideal choice for a project as ours that values transparency and adaptability. By combining different open-source components, the system can cover everything from the data collection and storage to the automations and user interaction without reinventing the wheel again.
+
+Other applications frequently use frameworks like Flask, Django, and FastAPI to manage the data flow from the devices. They offer incredibly effective methods for controlling requests and communication between the system and the devices it is connected to. FastAPI's speed and integrated validation features are well-known. It is therefore beneficial for handling vast volumes of sensor data. Smaller services that require integrated database and user management tools are better suited for Flask and Django. FastAPI is the best framework for the Smarter Home project because of its balance of scalability and performance.
+
+For communication between the different parts of the system, message brokers such as RabbitMQ, Apache Kafka and Redis Streams are relevant tools. These are tools that allow for the data to move smoothly between services without overloading the system. RabbitMQ is often used for reliable message delivery, Kafka for handling large data streams and Redis Streams for smaller real time tasks. In this case RabbitMQ will fit the project the best.
+
+When it comes to storing the data, we can think of databases like PostgreSQL, MongoDB and InfluxDB which each offer different strengths. PostgreSQL is a strong option for structured and relational data. And especially when paired with TimescaleDB for managing time series data like temperature or motion readings. MongoDB is more flexible for unstructured data. InfluxDB is designed specifically for high frequency sensor input. The right choice depends on how the system balances between the consistency and the flexibility. For its reliability and compatibility with time series extensions PostgreSQL with TimescaleDB is the best option.
+
+Next, the system should recognize user patterns and suggest automations. We can use machine learning libraries such as scikit-learn, pandas, and NumPy which already provide a practical foundation. They already support features such data analysis and model building in a transparent way. This helps users understand how the system reaches its conclusions. More advanced frameworks like TensorFlow or PyTorch could be explored later if the system needs deeper learning capabilities. But simpler approaches are often more interpretable and efficient for everyday use. And therefore in this context scikit-learn stands out as the best fit for developing explainable and lightweight automation models.
+
+For device compatibility, open source platforms like Home Assistant, OpenHAB and Node-RED already support a wide range of smart home devices. Home Assistant has a large community and is easy to extend with Python. OpenHAB focuses on modularity and long term stability. Node-RED adds a visual layer that helps users create automation flows without coding, making smart homes more accessible. When comparing the different options, we think Home Assistant is the most suitable, because of its active development and extensive device support.
+
+A good user experience is also essential. For this we need front end frameworks like React or Vue.js. These can be used to build responsive web interfaces where users can control their devices and view the system data. React is very popular for its flexibility and its large ecosystem. On the other hand Vue.js offers a more simple approach that suits smaller applications. Considering its maturity and strong community support and also the experience from our group with React, React is the best choice in our case for building the dynamic and user friendly interface.
+
+The security and the privacy are central to any smart home system. Open source tools such as Keycloak and ORY Hydra can handle secure authentication and role based access. This will ensure that only authorized users can view or modify sensitive information which is crucial for our Smart Home system. Additional tools like Let’s Encrypt and OpenSSL can help safeguard communication and credentials through encryption. Among these Keycloak stands out as the most fitting solution thanks to its flexibility and straightforward integration with our other system components.
+
+For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
 
 ## Cloud vs on Premises Development 
