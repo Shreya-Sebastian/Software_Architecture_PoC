@@ -86,25 +86,25 @@ A thorough context analysis is essential to understand the factors influencing t
 ### External Risks and Dependencies
 
 **Hardware and Sensors**  
-The system's effectiveness hinges on the accurate functioning of various smart home devices, including motion sensors, smart lights, thermostats, security cameras, and other IoT devices. Inaccuracies or failures can compromise the system’s ability to learn routines and suggest meaningful automations.
+The system's effectiveness hinges on the accurate functioning of various smart home devices, including motion sensors, smart lights, thermostats, security cameras, and other IoT devices. Inaccuracies or failures can compromise the system’s ability to learn routines and suggest meaningful automations. For example, a faulty motion sensor that fails to detect presence could lead the system to incorrectly learn that a room is empty, causing it to suggest turning off lights and heating for a user who is actually present.
 
 **Cloud Services and Connectivity**  
-Many features, including routine learning, routine suggestions, and remote access, depend on stable internet connectivity and cloud infrastructure. Outages or latency issues could reduce system reliability and user satisfaction (Moldstud, 2023).
+Many features, including routine learning, routine suggestions, and remote access, depend on stable internet connectivity and cloud infrastructure. Outages or latency issues could reduce system reliability and user satisfaction (Moldstud, 2023). An internet outage not only prevents remote access for the user but also creates a data gap, preventing the AI from analyzing real-time behavior.
 
 **Software Integration**  
 The system must integrate seamlessly with multiple smart home platforms (e.g., Google Home, Amazon Alexa) and device protocols (Zigbee, Z-Wave, Wi-Fi). Interoperability is essential for reliability, security, and consumer trust. Poor integration can cause compatibility issues and increased cybersecurity risks, while adherence to open standards enhances performance, safety, and user choice (OECD, 2018).
 
 **Machine Learning and Data Analytics**  
-AI-driven suggestions rely heavily on robust machine learning algorithms that can accurately recognize patterns in user behavior and generate useful automations. This requires continuous access to high-quality data from user interactions and connected devices. Incorrect assumptions about user routines could lead to frustration or disengagement (Fischer et al.).
+AI-driven suggestions rely heavily on robust machine learning algorithms that can accurately recognize patterns in user behavior and generate useful automations. This requires continuous access to high-quality data from user interactions and connected devices. Incorrect assumptions about user routines could lead to frustration or disengagement (Fischer et al.).  For example, the system could misinterpret one-time events like parties as a new daily routine and begin inconveniently suggesting late-night lighting. The system is therefore dependent on its ability to distinguish between recurring patterns and isolated exceptions to provide genuinely helpful automations.
 
 **Maintenance and Updates**  
-Continuous updates are essential for maintaining security and performance over time. Structured maintenance plans help prevent devices from becoming obsolete or vulnerable once manufacturer support ends (OECD, 2018). The evolving nature of data protection laws and smart home standards requires adaptability (Alshammari and Simpson).
+Continuous updates are essential for maintaining security and performance over time. Structured maintenance plans help prevent devices from becoming obsolete or vulnerable once manufacturer support ends (OECD, 2018). The evolving nature of data protection laws and smart home standards requires adaptability (Alshammari and Simpson). Failure to adhere to changing standards could cause elements of our system to become unresponsive, breaking already established user routines. 
 
 **Regulatory Compliance**  
-Compliance with data protection and privacy regulations (such as GDPR) is essential. The system depends on legal frameworks for data storage, processing, and consent management, which must be continually monitored as regulations evolve (Office of the Victorian Information Commissioner, 2023).
+Compliance with data protection and privacy regulations (such as GDPR) is essential. The system depends on legal frameworks for data storage, processing, and consent management, which must be continually monitored as regulations evolve (Office of the Victorian Information Commissioner, 2023). A change in legislation, such as an algorithmic explanation becoming mandatory, could then require significant re-engineering of the system's processing architecture to remain compliant. 
 
 **User Engagement and Feedback**  
-The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces, clear benefits, and user trust (Zigpoll, 2023). If the system proves overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.).
+The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces, clear benefits, and user trust (Zigpoll, 2023). If the system proves overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.). The system's AI is not static and so it requires continuous user interaction to refine its understanding of preferences. It depends on users actively confirming, rejecting, or modifying the automations it suggests. If the interface for providing feedback is unappealing, users may become passive.
 
 TODO: Add context diagram
 
