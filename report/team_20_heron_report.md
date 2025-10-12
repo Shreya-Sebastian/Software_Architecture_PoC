@@ -106,7 +106,7 @@ Compliance with data protection and privacy regulations (such as GDPR) is essent
 **User Engagement and Feedback**  
 The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces, clear benefits, and user trust (Zigpoll, 2023). If the system proves overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.). The system's AI is not static and so it requires continuous user interaction to refine its understanding of preferences. It depends on users actively confirming, rejecting, or modifying the automations it suggests. If the interface for providing feedback is unappealing, users may become passive.
 
-TODO: Add context diagram
+![Context Diagram](images/Context_Diagram.png)
 
 ## Ethical Implications and Mitigations
 
