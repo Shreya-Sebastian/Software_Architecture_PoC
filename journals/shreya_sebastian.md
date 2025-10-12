@@ -19,15 +19,12 @@ September 22nd: We had our problem refinement meeting and got feedback that the 
 ## Week 5
 
 Septermber 29th: The main subject of our meeting was to finalize the PoC direction and start working right away (1 hour 30 minutes). We explored the direction of scalability and also looked at learning routines from simulated data. But in the end, we decided to demonstrate a fault-tolerant architecture that ensures data consistency from distributed sensors, even during network failures. We then requested further feedback for this idea on Mattermost. 
-
 October 1st: We recieved feedback on our idea. First to be explicit about what the senosrs being "available" means to us.  We also got feedback that this can be well combined with some scalability patterns. 
-
 I worked on a PoC concept locally as it was difficult to schedule my team to meet to really finalize the PoC direction and ditribute tasks. I continued with the direction of proving system resilience during sensor failures and created a framework (2 hours). 
 
 ## Week 6
 
 The way the PoC works is if a sensor can't connect, it stores its readings locally. Once it's back online, it sends all the saved data to a central server, which then passes the information to a processing system in an orderly way. This design is designed to handle temporary sensor outages and smooth out data flow from the sensors without losing data. To prove the concept, I built a test script that displays different phases: a period of normal operation, a simulated disconnection of a single sensor and a reconnection phase (5 hours). 
-
 After working through some bugs, the simulation now runs successfully. It confirms that the disconnected sensor can upload its entire backlog of historical data without loss (1 hour).
+I polished the PoC a bit and created a readme file (2 hours). In the report, I discussed how the different components of the PoC tackle the problems of data loss and scalability and created a simple diagram to visualise the architecture (4 hours). I also wrote a section comparing the use of different cloud models for our system (1 hour 30 minutes).
 
-I polished the PoC a bit and created a readme file (2 hours) and wrote a discussion for it in the report (4 hours). I discussed how the different components of the PoC tackle the problems of data loss and scalability and created a simple diagram to visualise the architecture. 
