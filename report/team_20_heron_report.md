@@ -44,8 +44,6 @@ Throughout these stakeholders, there exist potential conflicts. Personalization 
 
 In conclusion, the smart home system has significant potential to make automation available to mass consumers on a more affordable basis through reduced learning needs and smart recommendations. Its stakeholders are homeowners and residents, but also developers, manufacturers, regulators and even insurers. Each group has its own interests and frictions and through well designed transparency and stakeholder engagement, the system can provide benefit to all of the people that are related to it.
 
-## TODO SOME SECTION NAME
-
 ### Domain model
 
 The model in the figure below shows the most important objects and relationships of the domain. The user is central to this system. They have some degree of control over most other objects in the system, as we want to emphasize user control. The only object the user does not access of its own accord is the Automation Suggestion System, which can only make suggestions to the user.
@@ -85,41 +83,30 @@ Some examples of suggested automations:
 
 A thorough context analysis is essential to understand the factors influencing the **“Smarter Home System”** project and to identify areas that must be managed for successful implementation.
 
-### External Risks
+### External Risks and Dependencies
 
-A number of risks emerge from this external context:
+**Hardware and Sensors**  
+The system's effectiveness hinges on the accurate functioning of various smart home devices, including motion sensors, smart lights, thermostats, security cameras, and other IoT devices. Inaccuracies or failures can compromise the system’s ability to learn routines and suggest meaningful automations.
 
-- **Privacy and Security Concerns**: Personal data could be vulnerable to breaches or unauthorized use (Liu et al.).
-- **User Adoption**: If the system proves overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.).
-- **Technological Challenges**: Risks include unreliable machine learning outcomes, sensor inaccuracies, and difficulties ensuring seamless integration with diverse ecosystems (Wang et al.).
-- **Over-Automation**: Incorrect assumptions about user routines could lead to frustration or disengagement (Fischer et al.).
-- **Service Reliability**: Dependency on continuous internet connectivity or cloud services introduces the possibility of service interruptions (Liu et al.).
-- **Regulatory Changes**: The evolving nature of data protection laws and smart home standards requires adaptability (Alshammari and Simpson).
+**Cloud Services and Connectivity**  
+Many features, including routine learning, routine suggestions, and remote access, depend on stable internet connectivity and cloud infrastructure. Outages or latency issues could reduce system reliability and user satisfaction (Moldstud, 2023).
 
-### Dependencies
+**Software Integration**  
+The system must integrate seamlessly with multiple smart home platforms (e.g., Google Home, Amazon Alexa) and device protocols (Zigbee, Z-Wave, Wi-Fi). Interoperability is essential for reliability, security, and consumer trust. Poor integration can cause compatibility issues and increased cybersecurity risks, while adherence to open standards enhances performance, safety, and user choice (OECD, 2018).
 
-The successful development and deployment of the **Smarter Home System** rely on several critical dependencies:
+**Machine Learning and Data Analytics**  
+AI-driven suggestions rely heavily on robust machine learning algorithms that can accurately recognize patterns in user behavior and generate useful automations. This requires continuous access to high-quality data from user interactions and connected devices. Incorrect assumptions about user routines could lead to frustration or disengagement (Fischer et al.).
 
-1. **Hardware and Sensors**  
-   The system's effectiveness hinges on the accurate functioning of various smart home devices, including motion sensors, smart lights, thermostats, security cameras, and other IoT devices. Inaccuracies or failures can compromise the system’s ability to learn routines and suggest meaningful automations.
+**Maintenance and Updates**  
+Continuous updates are essential for maintaining security and performance over time. Structured maintenance plans help prevent devices from becoming obsolete or vulnerable once manufacturer support ends (OECD, 2018). The evolving nature of data protection laws and smart home standards requires adaptability (Alshammari and Simpson).
 
-2. **Software Integration**  
-   The system must integrate seamlessly with multiple smart home platforms (e.g., Apple HomeKit, Google Home, Amazon Alexa) and device protocols (Zigbee, Z-Wave, Wi-Fi). Compatibility issues could limit effectiveness or adoption (OECD, 2018).
+**Regulatory Compliance**  
+Compliance with data protection and privacy regulations (such as GDPR) is essential. The system depends on legal frameworks for data storage, processing, and consent management, which must be continually monitored as regulations evolve (Office of the Victorian Information Commissioner, 2023).
 
-3. **Machine Learning and Data Analytics**  
-   AI-driven suggestions rely heavily on robust machine learning algorithms that can accurately recognize patterns in user behavior and generate useful automations. This requires continuous access to high-quality data from user interactions and connected devices.
+**User Engagement and Feedback**  
+The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces, clear benefits, and user trust (Zigpoll, 2023). If the system proves overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.).
 
-4. **Cloud Services and Connectivity**  
-   Many features, including real-time suggestions, routine learning, and remote access, depend on stable internet connectivity and cloud infrastructure. Outages or latency issues could reduce system reliability and user satisfaction (Moldstud, 2023).
-
-5. **Regulatory Compliance**  
-   Compliance with data protection and privacy regulations (such as GDPR) is essential. The system depends on legal frameworks for data storage, processing, and consent management, which must be continually monitored as regulations evolve (Office of the Victorian Information Commissioner, 2023).
-
-6. **User Engagement and Feedback**  
-   The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces, clear benefits, and user trust (Zigpoll, 2023).
-
-7. **Maintenance and Updates**  
-   Continuous software updates, bug fixes, and security patches are essential for the system to remain functional and secure. Dependency on a structured maintenance plan is critical to prevent obsolescence or vulnerabilities (OECD, 2018).
+TODO: Add context diagram
 
 ## Ethical Implications and Mitigations
 
