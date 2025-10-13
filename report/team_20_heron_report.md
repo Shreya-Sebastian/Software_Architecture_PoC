@@ -181,6 +181,8 @@ Each of the architectural styles have some pros and cons that are applicable to 
 | Event-driven |	High |	Medium |	Medium |	Medium |	Low |	High |
 | Microservice |	High |	High |	Medium |	Medium |	Medium |	High |
 
+The aim of the system is to offer robust, secure and smarter choices. The architectural styles offer these options in different branches. Here, since microservices is the style that is the closest to what is expected of our system. 
+
 ## C4 Software Architecture Views
 
 ### Context Views
@@ -202,7 +204,7 @@ The diagram identifies three external actors and one main system:
 3. Local Hubs sync data with the Cloud for analytics and automation.
 4. The system uses integration APIs to communicate with third-party smart home systems.
 
-![Context View](images/context_view.jpg)
+![Context View](images/context_view.png)
 
 
 ### Component View ###
