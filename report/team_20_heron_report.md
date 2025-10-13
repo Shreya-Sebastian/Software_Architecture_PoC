@@ -171,6 +171,69 @@ However, when looking at the system as a whole, microservices do introduce compl
 
 We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
 
+## Trade-off analysis
+
+Each of the architectural styles have some pros and cons that are applicable to smart home systems. These are summarized in the table below. The microservices architecture was finally selected since it offers high maintainability, scalability and complexity.
+| **Architecture** | **Scalability** |	**Maintainability** |	**Data Integrity** |	**Responsiveness** |	**Privacy** |	**Complexity** | 
+| ---------------- | --------------- | -------------------- | ------------------ | ------------------- | ------------ | -------------- |
+| Monolithic |	Low |	Low	| High |	High |	High |	Low |
+| Microkernel |	Medium |	High |	High |	High |	Medium |	Medium |
+| Event-driven |	High |	Medium |	Medium |	Medium |	Low |	High |
+| Microservice |	High |	High |	Medium |	Medium |	Medium |	High |
+
+## C4 Software Architecture Views
+
+### Context Views
+
+The context view covers defines the relationship between Smarter home system and external parties or systems. It shows the interactions between users, devices and third-party platforms with the system when it operates.
+
+The diagram identifies three external actors and one main system:
+
+1. User - The primary external actor who interacts with the system through web UI or mobile to monitor or control devices, manage preferences and view data insights.
+2. Smarter Home System - It is composed of several internal containers (Local Hub, Cloud Services and connected Devices).
+3. Local Hub - It's an edge node inside the home network which communicates with IoT devices abd sensors directly.
+4. Devices/Sensors - They are physical IoT devices that generate data and receive commands.
+5. Third-party Platforms - They are external agencies which connect through APIs.
+
+**Interactions**
+
+1. The user interacts with the system through app/UI.
+2. Devices send sensor data to Local Hubs.
+3. Local Hubs sync data with the Cloud for analytics and automation.
+4. The system uses integration APIs to communicate with third-party smart home systems.
+
+![Context View](images/context_view.jpg)
+
+
+### Component View ###
+The component view shows the decomposition of the system's internal functionality into modules, services and other building blocks. Each component has a distinct responsibility and communicates via defined interfaces.
+
+The Smarter home system can be divided into two main environments - Local Hub and Cloud Services.
+
+**Local Hub:** It is responsible for local processing and ensuring that automations work even offline.
+1. Core - It orchestrates communication between all local components.
+2. Device Communication - It interferes with sensors using standard protocols like Wi-Fi.
+3. Routine Detection - It analyzes incoming event streams to identify user behavior patterns.
+4. Automation Suggestion - It generates automations based on learned routines.
+5. User Management - It handles user authentication, role-based access and permissions.
+
+**Cloud Services:** It's responsible for data storage and analytics.
+1. API Gateway - It exposes REST APIs to the app, Local Hub and third-party systems.
+2. Authentication - It manages identity verification.
+3. Notifications - It sends user alerts about new automations, security events or system updates.
+
+**Shared Infrastructure:**
+1. Database - It's used for long-term storage of user profiles, device data, automation logs and learned models.
+2. Message Queue (RabbitMQ) - It decouples data ingestion and processing for scalability and fault tolerance.
+
+**Interactions**
+
+1. Local Hub components publish events to the Message Queue, consumed by Cloud services for aggregation.
+2. The Core communicates with API gateway for cloud synchronisation.
+3. The data and command traffic reach the database through API layer.
+
+![Component View](images/component_view.png)
+
 ## Container view
 
 In this section we show the components of the Smart Home system. The diagram below shows the system is composed of two parts: One part on the cloud and one part on a local hub. The different boxes inside the cloud depict different microservices. Inside the local hub, the different boxes depict plug-ins. The cylinders depict databases. As per the microkernel architecture, plug-ins in the local hub only communicate with the core.
@@ -201,6 +264,26 @@ Local hub building blocks:
 | Database | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage. |
 
 Besides detecting routines, the cloud acts as an intermediary between remote users and the local hub, allowing users to interact with their devices from outside their home. Similarly, the local hub may notify the users via the cloud. Users may also interact with their local hub directly if they are on the same local network. 
+
+### Class View ###
+
+The Class view depicts the internal code structure. It focuses on logical organization rather than runtime behaviour. This view is focused on the entirety of the Smarter home system and isn't limted to the PoC of the assignment which focuses on particular functionalities.
+
+1. User - It represents the system user. Includes authentication, roles, permissions.
+2. Device - It models a virtual IoT device with state and control methods.
+3. Event - It represents data captured from devices.
+4. AutomationSuggestion - It is used to automatically generate suggestions based on detected routines.
+5. RoutineDetector - Processes events to learn user behaviour patterns and generate automation triggers.
+6. Repository - Handles persistence like saving, querying and loading data.
+
+**Relationships**
+
+1. User -> Device: Users control and manage devices.
+2. Device -> Event: Devices generate events logged by system.
+3. Event -> RoutineDetector: Event data feeds into pattern-learning algorithm.
+4. RoutineDetector -> AutomationSuggestion: Detected routines lead to automation suggestions.
+
+![Class View](images/class_view.png)
 
 ## Runtime view
 
