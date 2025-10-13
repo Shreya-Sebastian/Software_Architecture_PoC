@@ -28,3 +28,6 @@ The way the PoC works is if a sensor can't connect, it stores its readings local
 After working through some bugs, the simulation now runs successfully. It confirms that the disconnected sensor can upload its entire backlog of historical data without loss (1 hour).
 I polished the PoC a bit and created a readme file (2 hours). In the report, I discussed how the different components of the PoC tackle the problems of data loss and scalability and created a simple diagram to visualise the architecture (4 hours). I also wrote a section comparing the use of different cloud models for our system (1 hour 30 minutes).
 
+## Week 7
+I updated the context analysis section to be in line with the feedback we got earlier and added a context diagram (2 hours). I also reworked the ethical implications section to be a bit less redundant and made other small edits (1 hour). 
+
