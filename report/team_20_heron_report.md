@@ -230,6 +230,14 @@ Local hub building blocks:
 
 Besides detecting routines, the cloud acts as an intermediary between remote users and the local hub, allowing users to interact with their devices from outside their home. Similarly, the local hub may notify the users via the cloud. Users may also interact with their local hub directly if they are on the same local network. 
 
+## Runtime view
+
+In this section we discuss a runtime view illustrating how the cloud and local hub work together to connect the user to their home. The diagram below shows the interactions between the local hub,the cloud and their plug-ins and microservices, when the user wants to update a device. For example, updating a device could mean turning a light on or off.
+
+![Runtime view of the user updating a device](images/runtime_update_device.png)
+
+In this diagram, the cloud connects the user to the local hub, allowing the user to make requests remotely. The request is forwarded to the network module on the local hub. The network module passes this request to the core of the hub, as no plug-ins interact with each other. To interact with the device the hub needs to build a request adhering to the protocol used by the device. To do this, the core uses the device communication plug-in to build the appropriate request. This request is passed to the network module which sends it to the device. The device then returns a message to the hub, which is passed through the network module to the core. The core then uses the device communication plug-in again to parse the response, and can then update the database.
+
 ## Pricing model
 
 The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
