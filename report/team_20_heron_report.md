@@ -44,40 +44,31 @@ Throughout these stakeholders, there exist potential conflicts. Personalization 
 
 In conclusion, the smart home system has significant potential to make automation available to mass consumers on a more affordable basis through reduced learning needs and smart recommendations. Its stakeholders are homeowners and residents, but also developers, manufacturers, regulators and even insurers. Each group has its own interests and frictions and through well designed transparency and stakeholder engagement, the system can provide benefit to all of the people that are related to it.
 
-### Domain model
+## Domain model
 
 The model in the figure below shows the most important objects and relationships of the domain. The user is central to this system. They have some degree of control over most other objects in the system, as we want to emphasize user control. The only object the user does not access of its own accord is the Automation Suggestion System, which can only make suggestions to the user.
 
 ![Domain model](images/domain.png)
 
-### Functional requirements
+## Functional requirements
 
-The following requirements are essential to the Smarter Home:
+The Smarter Home system is designed to create an intelligent and user friendly environment by using automation. The detailed functional requirements for this system are provided in [Appendix A](../appendix/team_20_appendix.md). This section summarizes the core functionalities and shows their operation through example user scenarios.
 
-- User management:
-   - One user is the main user of a given home.
-   - This user can authorize other users to use the Smarter Home system, and manage their permissions.
-- Device management:
-   - Users can add/remove devices to/from their home.
-   - Users can operate devices.
-- Device automation:
-   - Users may create an automation for their devices.
-   - Automations can view information collected by devices.
-- Data collection and management:
-   - Devices record data and store this in a database.
-   - Data is annotated by time and source.
-   - Users can view and delete this data at any time.
-- Automation suggestion:
-   - Recorded data is used to identify routines of the home and users.
-   - Automations are suggested based on this recorded data.
-   - Suggested automations show the users on which data they are based.
-   - Users may alter the suggested automation before accepting it.
+### Overview
+
+The Smarter Home allows a main user to manage access, configure devices and create automations based on generated suggestions. Devices record operational data and this is then is analyzed to detect user routines. Users can review and accept or reject these suggestions still maintaining full control over their smart environment.
 
 ### Scenarios
 
-Some examples of suggested automations:
-- The system notices that lights that are turned on by 7:00pm are set to a lower intensity. The system notifies the user of a detected routine, and suggests an automation that reduces the intensity of each light that is on by 7:00pm.
-- The system notices that the heating is turned down after the door opens and closes in the morning. The system is suggests an automation that reduces the heat after the door is opened and closed. The user alters this automation to make sure this only happens before 10:00am.
+The following scenarios illustrate how the Smarter Home system identifies user behavior patterns and generates useful automation suggestions to improve convenience and efficiency.
+
+1. The system notices that lights that are turned on by 7:00 PM are dimmed to a lower intensity. The system notifies the user of a detected routine, and suggests an automation that reduces the intensity of each light that is on by 7:00 PM. The user reviews this suggestion and enables the automation. 
+
+2. The system notices that the heating is turned down after the door opens and closes in the morning. The system is suggests an automation that reduces the heat after the door is opened and closed. The user alters this automation to make sure this only happens before 10:00 AM. After the change the automation is enabled.
+
+![State Diagram](images/stateDiagram.png)
+
+This state diagram shows the flow of the Smarter Home system when identifying and implementing an automation suggestion. It shows how the system collects device data detects, user behavior and generates a corresponding automation proposal. Once the user reviews and enables the automation, it becomes active and executes automatically according to the detected routine. This process reflects the scenarios described above, where the system learns from repeated actions, such as dimming lights at 7:00 PM and transforms them into smart user-approved automations that enhance convenience and efficiency of their home.
 
 ## Context Analysis
 
