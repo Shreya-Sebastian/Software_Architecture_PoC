@@ -155,21 +155,60 @@ In a monolithic architecture, the whole system is built as a single deployable u
 1. **Simple development:** Monolithic architectures are constructed with one codebase, making them easier to build. Testing the system as as whole is also easier, as the whole of the system could be run from a single instance. Lastly, deployment is also simplified as the system works with a single executable or directory.
 2. **Security:** Data is processed inside a closed system, which makes it harder for cyberthreats to access it from the outside.
 
-However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures.[1][2]
+However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures (Powell & Smalley)(Ponce et al. 2019).
 
 ### Microkernel Architecture
 
-In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes require a complete redeployment.[3]
+In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes require a complete redeployment (Thomas, 2025).
 
 ### Microservice Architecture
 
-In a microservice architecture, the system is split into "independently deployable, loosely coupled, components, a.k.a. services."[4] Each service runs in its own process and is responsible for its own subdomain. This division makes a microservice architecture extremely friendly to change. Individual components can be updated, tested and deployed without intruding on the functionality of others, allowing continuous delivery. Furthermore, when a single service fails, the other service may stay running.
+In a microservice architecture, the system is split into "independently deployable, loosely coupled, components, a.k.a. services."(Richardson) Each service runs in its own process and is responsible for its own subdomain. This division makes a microservice architecture extremely friendly to change. Individual components can be updated, tested and deployed without intruding on the functionality of others, allowing continuous delivery. Furthermore, when a single service fails, the other service may stay running.
 
-However, when looking at the system as a whole, microservices do introduce complexity, mainly in the communication between services. There are increased security risks, because data is now processed over multiple services potentially opening up more avenues to attack.
+However, when looking at the system as a whole, microservices do introduce complexity, mainly in the communication between services. There are increased security risks, because data is now processed over multiple services potentially opening up more avenues to attack (Powell & Smalley).
 
 ### Conclusion
 
 We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
+
+## Container view
+
+In this section we show the components of the Smart Home system. The diagram below shows the system is composed of two parts: One part on the cloud and one part on a local hub. The different boxes inside the cloud depict different microservices. Inside the local hub, the different boxes depict plug-ins. The cylinders depict databases. As per the microkernel architecture, plug-ins in the local hub only communicate with the core.
+
+![Container View](images/container.png)
+
+Cloud building blocks:
+
+| **Building block** | **Description** |
+| ------------------ | --------------- |
+| API gateway | Entry point for all requests to the cloud and can forward requests to the local hub (Richardson). |
+| Notifications | Responsible for notifying the user directly on their mobile device. |
+| Routine detection | Reads the sensor data inside the database and infers routines from them. |
+| Database | Cloud storage that holds user information for authentication and sensor data for routine detection. |
+
+Local hub building blocks:
+
+| **Building block** | **Description** |
+| ------------------ | --------------- |
+| Core | Core of the microkernel architecture of the local hub. Calls other plug-ins when needed. |
+| Cloud synchronization | Responsible for offloading sensor data to the cloud database. |
+| Automation | Runs configured automations. |
+| Device communication | Responsible for building and interpreting requests to and from smart home devices. |
+| Authentication | Makes sure only authenticated users can interact with the Smarter Home. |
+| Automation suggestion | Interprets detected routine to suggest automations to the user. |
+| User Management | Manages authentication levels of all users of the Smarter Home. |
+| Network Module | Entry point for all requests to the local hub. |
+| Database | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage. |
+
+Besides detecting routines, the cloud acts as an intermediary between remote users and the local hub, allowing users to interact with their devices from outside their home. Similarly, the local hub may notify the users via the cloud. Users may also interact with their local hub directly if they are on the same local network. 
+
+## Runtime view
+
+In this section we discuss a runtime view illustrating how the cloud and local hub work together to connect the user to their home. The diagram below shows the interactions between the local hub,the cloud and their plug-ins and microservices, when the user wants to update a device. For example, updating a device could mean turning a light on or off.
+
+![Runtime view of the user updating a device](images/runtime_update_device.png)
+
+In this diagram, the cloud connects the user to the local hub, allowing the user to make requests remotely. The request is forwarded to the network module on the local hub. The network module passes this request to the core of the hub, as no plug-ins interact with each other. To interact with the device the hub needs to build a request adhering to the protocol used by the device. To do this, the core uses the device communication plug-in to build the appropriate request. This request is passed to the network module which sends it to the device. The device then returns a message to the hub, which is passed through the network module to the core. The core then uses the device communication plug-in again to parse the response, and can then update the database.
 
 ## Pricing model
 
@@ -280,8 +319,6 @@ The test operates in three distinct phases:
 
 Finally, the test concludes by checking that the disconnected sensor's local buffer file is empty, providing a clear pass/fail result that confirms successful completion.
 
-
-
 ## References
 
 - Technavio. _Smart Home Market to Grow by USD 255.2 Billion, 2025–2029: Rising Consumer Interest in Home Automation Drives Growth; Report on How AI Is Redefining Market Landscape._ PR Newswire, 2023. [Link](https://www.prnewswire.com/news-releases/smart-home-market-to-grow-by-usd-255-2-billion-2025-2029-rising-consumer-interest-in-home-automation-drives-growth-report-on-how-ai-is-redefining-market-landscape---technavio-302362885.html)
@@ -305,3 +342,13 @@ Finally, the test concludes by checking that the disconnected sensor's local buf
 - OECD. _Consumer Policy and the Smart Home._ OECD, 2018. [Link](https://www.oecd.org/content/dam/oecd/en/publications/reports/2018/04/consumer-policy-and-the-smart-home_5cd05699/e124c34a-en.pdf)
 
 - Zigpoll. _How Data Scientists Improve User Interaction Insights for Smart Home Devices to Make Everyday Tasks More Intuitive._ Zigpoll, 2023. [Link](https://www.zigpoll.com/content/how-can-a-data-scientist-help-improve-user-interaction-insights-for-our-smart-home-devices-to-make-everyday-tasks-more-intuitive)
+
+- Ponce, F., Marquez, G., & Astudillo, H. _Migrating from monolithic architecture to microservices: A rapid review._ 2019 38th International Conference of the Chilean Computer Science Society (SCCC), 1–7. [Link](https://doi.org/10.1109/sccc49216.2019.8966423)
+
+- Powell, P., & Smalley, I. _What is monolithic architecture?_ IBM. [Link](https://doi.org/10.1109/sccc49216.2019.8966423)
+
+- Richardson, C. _Microservices Pattern: Microservice architecture pattern_. microservices.io. [Link](https://microservices.io/patterns/microservices.html)
+
+- Richardson, C. _Microservices pattern: Pattern: API gateway / backends for frontends_. microservices.io. [Link](https://microservices.io/patterns/apigateway.html)
+
+- Thomas, R. _Microkernel Architecture_. Brisbane; University of Queensland, 2025 [PDF](https://csse6400.uqcloud.net/handouts/microkernel.pdf)
