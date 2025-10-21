@@ -8,6 +8,7 @@ import random
 import os
 from collections import deque
 
+
 class Sensor:
     """
     A simulated sensor with 'store and forward' capability.
@@ -16,6 +17,7 @@ class Sensor:
     - If sending fails, it buffers data to a local file.
     - Upon reconnection, it sends the buffered data.
     """
+
     def __init__(self, sensor_id: str, server_url: str, data_type: str = "temperature"):
         self.sensor_id = sensor_id
         self.server_url = server_url
@@ -29,16 +31,18 @@ class Sensor:
         # Loads pending data from the buffer file on startup
         if not os.path.exists(self.buffer_file):
             return deque()
-        with open(self.buffer_file, 'r') as f:
+        with open(self.buffer_file, "r") as f:
             readings = [json.loads(line) for line in f]
-            print(f"[{self.sensor_id}] INFO: Loaded {len(readings)} readings from buffer.")
+            print(
+                f"[{self.sensor_id}] INFO: Loaded {len(readings)} readings from buffer."
+            )
             return deque(readings)
 
     def _save_to_buffer(self, reading: dict):
         # Appends a single reading to the buffer and the file
         self.buffer.append(reading)
-        with open(self.buffer_file, 'a') as f:
-            f.write(json.dumps(reading) + '\n')
+        with open(self.buffer_file, "a") as f:
+            f.write(json.dumps(reading) + "\n")
 
     def _clear_buffer_file(self):
         # Clears the buffer file after successful transmission
@@ -52,7 +56,7 @@ class Sensor:
             "sensor_id": self.sensor_id,
             "type": self.data_type,
             "value": round(random.uniform(18.0, 25.0), 2),
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _send_data(self, readings: list) -> bool:
@@ -62,13 +66,20 @@ class Sensor:
                 self.server_url,
                 json=readings,
                 headers={"Content-Type": "application/json"},
-                timeout=2.0
+                timeout=2.0,
             )
             response.raise_for_status()
-            print(f"[{self.sensor_id}] INFO: Successfully sent {len(readings)} readings. Server says: {response.json()['status']}")
+            print(
+                f"[{self.sensor_id}] INFO: Successfully sent {len(readings)} readings. Server says: {response.json()['status']}"
+            )
             return True
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as e:
-            print(f"[{self.sensor_id}] ERROR: Could not connect to server. {e.__class__.__name__}")
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as e:
+            print(
+                f"[{self.sensor_id}] ERROR: Could not connect to server. {e.__class__.__name__}"
+            )
             return False
 
     def run(self):
@@ -81,17 +92,23 @@ class Sensor:
                 # When connected, try to send buffer first (resynchronize)
                 # If there is backlog in buffer
                 if self.buffer:
-                    print(f"[{self.sensor_id}] INFO: Connection restored. Attempting to send {len(self.buffer)} buffered readings.")
+                    print(
+                        f"[{self.sensor_id}] INFO: Connection restored. Attempting to send {len(self.buffer)} buffered readings."
+                    )
                     # Send buffer in chunks to avoid large requests
                     buffer_batch = []
                     while self.buffer:
                         buffer_batch.append(self.buffer.popleft())
 
                     if self._send_data(buffer_batch):
-                        self._clear_buffer_file() # Clear file only on success
-                        print(f"[{self.sensor_id}] INFO: Buffer successfully sent and cleared.")
+                        self._clear_buffer_file()  # Clear file only on success
+                        print(
+                            f"[{self.sensor_id}] INFO: Buffer successfully sent and cleared."
+                        )
                     else:
-                        print(f"[{self.sensor_id}] WARNING: Failed to send buffer. Re-buffering data.")
+                        print(
+                            f"[{self.sensor_id}] WARNING: Failed to send buffer. Re-buffering data."
+                        )
                         # Put data back at the front of the deque
                         self.buffer.extendleft(reversed(buffer_batch))
                         self.is_connected = False
@@ -99,7 +116,9 @@ class Sensor:
 
                 # Try to send the new reading
                 if self.is_connected and not self._send_data([current_reading]):
-                    print(f"[{self.sensor_id}] WARNING: Connection lost. Buffering new reading.")
+                    print(
+                        f"[{self.sensor_id}] WARNING: Connection lost. Buffering new reading."
+                    )
                     self.is_connected = False
                     self._save_to_buffer(current_reading)
             else:
