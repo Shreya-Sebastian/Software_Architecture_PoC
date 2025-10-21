@@ -12,7 +12,7 @@ class Sensor:
     """
     A simulated sensor with 'store and forward' capability.
     - Generates data periodically.
-    - Tries to send data (and any existing backlog) to the server.
+    - Tries to send current data and any existing backlog to the server.
     - If sending fails, it buffers data to a local file.
     - Upon reconnection, it sends the buffered data.
     """
@@ -22,8 +22,9 @@ class Sensor:
         self.data_type = data_type
         self.buffer_file = f"buffer_{self.sensor_id}.log"
         self.buffer = self._load_buffer()
-        self.is_connected = True  # Controlled externally by the test script
+        self.is_connected = True  # Controlled externally by test script
         self._stop_event = threading.Event()
+        self.CHUNK_SIZE = 25
 
     def _load_buffer(self) -> deque:
         # Loads pending data from the buffer file on startup
@@ -41,7 +42,7 @@ class Sensor:
             f.write(json.dumps(reading) + '\n')
 
     def _clear_buffer_file(self):
-        # Clears the buffer file after successful transmission
+        # Clears the buffer file after successful sending
         if os.path.exists(self.buffer_file):
             os.remove(self.buffer_file)
 
@@ -76,34 +77,56 @@ class Sensor:
         while not self._stop_event.is_set():
             # Generate new data
             current_reading = self.generate_reading()
+            send_current_reading_now = True  # Flag to control sending the new reading
 
             if self.is_connected:
                 # When connected, try to send buffer first (resynchronize)
-                # If there is backlog in buffer
                 if self.buffer:
-                    print(f"[{self.sensor_id}] INFO: Connection restored. Attempting to send {len(self.buffer)} buffered readings.")
-                    # Send buffer in chunks to avoid large requests
-                    buffer_batch = []
-                    while self.buffer:
-                        buffer_batch.append(self.buffer.popleft())
+                    print(f"[{self.sensor_id}] INFO: Connection restored. Attempting to send {len(self.buffer)} buffered readings in chunks...")
+                    
+                    all_chunks_sent = True
 
-                    if self._send_data(buffer_batch):
-                        self._clear_buffer_file() # Clear file only on success
-                        print(f"[{self.sensor_id}] INFO: Buffer successfully sent and cleared.")
+                    while self.buffer and all_chunks_sent:
+                        chunk = []
+                        for i in range(self.CHUNK_SIZE):
+                            if not self.buffer:
+                                break
+                            # Remove buffer for now, add back if failure 
+                            chunk.append(self.buffer.popleft())
+
+                        if not chunk:
+                            break # Buffer was empty
+
+                        if self._send_data(chunk):
+                            print(f"[{self.sensor_id}] INFO: Sent chunk of {len(chunk)}. {len(self.buffer)} remaining in queue.")
+
+                        else:
+                            print(f"[{self.sensor_id}] WARNING: Failed to send chunk. Aborting buffer send.")
+                            # Add buffer back in right order
+                            self.buffer.extendleft(reversed(chunk))
+                            all_chunks_sent = False
+                            self.is_connected = False
+                    
+                    # After the loop, check if the buffer is empty
+                    if not self.buffer:
+                         print(f"[{self.sensor_id}] INFO: Buffer successfully sent and cleared.")
+                         self._clear_buffer_file() # Now it's safe to clear the file
                     else:
-                        print(f"[{self.sensor_id}] WARNING: Failed to send buffer. Re-buffering data.")
-                        # Put data back at the front of the deque
-                        self.buffer.extendleft(reversed(buffer_batch))
-                        self.is_connected = False
-                        self._save_to_buffer(current_reading)
+                        # A chunk failed
+                        # Dont send the current reading, as it would be out of order.
+                        send_current_reading_now = False
 
-                # Try to send the new reading
-                if self.is_connected and not self._send_data([current_reading]):
-                    print(f"[{self.sensor_id}] WARNING: Connection lost. Buffering new reading.")
-                    self.is_connected = False
-                    self._save_to_buffer(current_reading)
+                # sensor connected and buffer send was succesful
+                if send_current_reading_now and self.is_connected:
+                    # Try to send reading
+                    if not self._send_data([current_reading]):
+                        # Give warning if failed
+                        print(f"[{self.sensor_id}] WARNING: Connection lost. Buffering new reading.")
+                        self.is_connected = False
+
+            # If not connected
             else:
-                # If not connected, just buffer the data
+                # Buffer the current reading
                 print(f"[{self.sensor_id}] OFFLINE: Buffering reading.")
                 self._save_to_buffer(current_reading)
 

@@ -10,13 +10,13 @@ SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 8000
 SERVER_URL = f"http://{SERVER_HOST}:{SERVER_PORT}/ingest/"
 
-NUM_SENSORS = 3
+NUM_SENSORS = 20
 DISCONNECTED_SENSOR_ID = "sensor-1"
 
 #Test Durations (seconds)
-PHASE_1_NORMAL_DURATION = 10
-PHASE_2_DISRUPTION_DURATION = 10
-PHASE_3_RESYNC_DURATION = 10
+PHASE_1_NORMAL_DURATION = 20
+PHASE_2_DISRUPTION_DURATION = 50
+PHASE_3_RESYNC_DURATION = 20
 
 def cleanup():
     # Removes old buffer files if they exist
@@ -31,13 +31,11 @@ def start_services():
     print("Starting Background Services")
     # Start the FastAPI server
     server_process = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "ingestion_server:app", "--host", SERVER_HOST, "--port", str(SERVER_PORT)],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        [sys.executable, "-m", "uvicorn", "ingestion_server:app", "--host", SERVER_HOST, "--port", str(SERVER_PORT)]
     )
     # Start the consumer
     consumer_process = subprocess.Popen(
-        ["python", "consumer.py"],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ["python", "consumer.py"]
     )
     
     # Wait for the server to be ready
