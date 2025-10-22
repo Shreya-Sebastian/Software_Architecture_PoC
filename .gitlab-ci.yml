@@ -1,0 +1,51 @@
+# This file is a template, and might need editing before it works on your project.
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/#stages
+#
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/development/cicd/templates/
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+
+stages:
+  - style
+
+image: python:3.11
+
+before_script:
+  - python --version
+  - pip install -r poc/requirements.txt || true
+
+# Only run the pipeline when Python files under poc change (ignore MD)
+workflow:
+  rules:
+    - changes:
+        - 'poc/**/*.py'
+      when: always
+    - when: never
+
+style-check:
+  stage: style
+  image: python:3.11
+  script:
+    - echo "Installing formatter (black)..."
+    - pip install "black>=23.0.0"
+    - echo "Checking Python syntax (compile all files under poc)..."
+    - python -m compileall poc
+    - echo "Running black in check mode..."
+    - black --check --diff poc
+  rules:
+    - changes:
+        - 'poc/**/*.py'
+      when: always
+    - when: never
+  allow_failure: false
