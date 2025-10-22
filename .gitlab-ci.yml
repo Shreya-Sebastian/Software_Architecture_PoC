@@ -1,51 +1,75 @@
-# This file is a template, and might need editing before it works on your project.
-# This is a sample GitLab CI/CD configuration file that should run without any modifications.
-# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
-# it uses echo commands to simulate the pipeline execution.
-#
-# A pipeline is composed of independent jobs that run scripts, grouped into stages.
-# Stages run in sequential order, but jobs within stages run in parallel.
-#
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/#stages
-#
-# You can copy and paste this template into a new `.gitlab-ci.yml` file.
-# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
-#
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/development/cicd/templates/
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+# This pipeline demonstrates a basic 3 stage CI/CD pipeline. 
 
 stages:
   - style
+  - build
+  - test
 
-image: python:3.11
-
-before_script:
-  - python --version
-  - pip install -r poc/requirements.txt || true
-
-# Only run the pipeline when Python files under poc change (ignore MD)
+# Only run the pipeline when Python files change (ignore MD)
 workflow:
   rules:
     - changes:
-        - 'poc/**/*.py'
+        - '*.py'
       when: always
     - when: never
 
 style-check:
   stage: style
+  # Use a basic Python image just for style checking
   image: python:3.11
+  before_script:
+    - python --version
+    - pip install -r requirements.txt
   script:
     - echo "Installing formatter (black)..."
     - pip install "black>=23.0.0"
-    - echo "Checking Python syntax (compile all files under poc)..."
-    - python -m compileall poc
+    - echo "Checking Python syntax (compile all files)..."
+    - python -m compileall .
     - echo "Running black in check mode..."
-    - black --check --diff poc
-  rules:
-    - changes:
-        - 'poc/**/*.py'
-      when: always
-    - when: never
+    - black --check --diff .
   allow_failure: false
+
+build-image:
+  stage: build
+  # Use the Docker-in-Docker (DinD) image
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    # Use TLS for the DinD service
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    # Log in to the GitLab Container Registry
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - echo "Building Docker image..."
+    # Build the image using the Dockerfile 
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - echo "Pushing Docker image to registry..."
+    # Push the image so test jobs can use it
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+run-unit-tests:
+  stage: test
+  # Use the image built in the 'build-image' job
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  before_script: [] 
+  script:
+    - echo "Running unit tests inside the Docker container..."
+    - python -m pytest -v
+
+run-poc:
+  stage: test
+  # Use the image we just built
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  before_script: [] 
+  services:
+    # Add the RabbitMQ service
+    - name: rabbitmq:3-management
+      alias: rabbitmq
+  variables:
+    # Set the environment variable so scripts can find RabbitMQ
+    RABBITMQ_HOST: rabbitmq
+  script:
+    - echo "Running PoC test script (run_poc_test.py) inside the Docker container..."
+    - python run_poc_test.py
