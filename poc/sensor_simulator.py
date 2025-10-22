@@ -9,7 +9,6 @@ import os
 from collections import deque
 
 
-
 class Sensor:
     """
     A simulated sensor with 'store and forward' capability.
@@ -18,7 +17,6 @@ class Sensor:
     - If sending fails, it buffers data to a local file.
     - Upon reconnection, it sends the buffered data.
     """
-
 
     def __init__(self, sensor_id: str, server_url: str, data_type: str = "temperature"):
         self.sensor_id = sensor_id

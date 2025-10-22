@@ -45,9 +45,7 @@ def start_services():
         ]
     )
     # Start the consumer
-    consumer_process = subprocess.Popen(
-        ["python", "consumer.py"]
-    )
+    consumer_process = subprocess.Popen(["python", "consumer.py"])
 
     # Wait for the server to be ready
     server_ready = False
@@ -71,6 +69,7 @@ def start_services():
         return None, None
 
     return server_process, consumer_process
+
 
 def stop_services(server_process, consumer_process):
     # Stops the background services
@@ -120,7 +119,6 @@ def main():
         # Stop all sensor threads
         for sensor in sensors:
             sensor.stop()
-
 
         # Stop background services
         stop_services(server_proc, consumer_proc)
