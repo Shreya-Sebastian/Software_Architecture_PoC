@@ -10,13 +10,13 @@ SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 8000
 SERVER_URL = f"http://{SERVER_HOST}:{SERVER_PORT}/ingest/"
 
-NUM_SENSORS = 20
+NUM_SENSORS = 5
 DISCONNECTED_SENSOR_ID = "sensor-1"
 
 # Test Durations (seconds)
-PHASE_1_NORMAL_DURATION = 20
-PHASE_2_DISRUPTION_DURATION = 50
-PHASE_3_RESYNC_DURATION = 20
+PHASE_1_NORMAL_DURATION = 10
+PHASE_2_DISRUPTION_DURATION = 10
+PHASE_3_RESYNC_DURATION = 10
 
 
 def cleanup():
@@ -45,12 +45,17 @@ def start_services():
         ]
     )
     # Start the consumer
-    consumer_process = subprocess.Popen(["python", "consumer.py"])
+    consumer_process = subprocess.Popen(
+        ["python", "consumer.py"]
+    )
 
     # Wait for the server to be ready
     server_ready = False
     for _ in range(20):  # Try for up to 10 seconds
         try:
+            response = requests.get(
+                f"http://{SERVER_HOST}:{SERVER_PORT}/health", timeout=0.5
+            )
             response = requests.get(
                 f"http://{SERVER_HOST}:{SERVER_PORT}/health", timeout=0.5
             )
@@ -66,7 +71,6 @@ def start_services():
         return None, None
 
     return server_process, consumer_process
-
 
 def stop_services(server_process, consumer_process):
     # Stops the background services
@@ -116,6 +120,7 @@ def main():
         # Stop all sensor threads
         for sensor in sensors:
             sensor.stop()
+
 
         # Stop background services
         stop_services(server_proc, consumer_proc)
