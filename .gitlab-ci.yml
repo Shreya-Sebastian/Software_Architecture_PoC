@@ -9,7 +9,7 @@ stages:
 workflow:
   rules:
     - changes:
-        - '*.py'
+        - 'poc/*.py'
       when: always
     - when: never
 
@@ -27,8 +27,9 @@ build-image:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo "Building Docker image..."
-    # Build the image using the Dockerfile 
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    # Build the image using the Dockerfile
+    # Tell Docker to use 'poc/' as the build context
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA poc/
     - echo "Pushing Docker image to registry..."
     # Push the image so test jobs can use it
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
