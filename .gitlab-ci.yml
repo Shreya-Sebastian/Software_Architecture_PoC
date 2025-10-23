@@ -1,9 +1,9 @@
 # This pipeline demonstrates a basic 3 stage CI/CD pipeline. 
 
 stages:
-  - style
   - build
   - test
+  - style
 
 # Only run the pipeline when Python files change (ignore MD)
 workflow:
@@ -12,22 +12,6 @@ workflow:
         - '*.py'
       when: always
     - when: never
-
-style-check:
-  stage: style
-  # Use a basic Python image just for style checking
-  image: python:3.11
-  before_script:
-    - python --version
-    - pip install -r requirements.txt
-  script:
-    - echo "Installing formatter (black)..."
-    - pip install "black>=23.0.0"
-    - echo "Checking Python syntax (compile all files)..."
-    - python -m compileall .
-    - echo "Running black in check mode..."
-    - black --check --diff .
-  allow_failure: false
 
 build-image:
   stage: build
@@ -60,7 +44,7 @@ run-unit-tests:
 
 run-poc:
   stage: test
-  # Use the image we just built
+  # Use the image built
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script: [] 
   services:
@@ -73,3 +57,18 @@ run-poc:
   script:
     - echo "Running PoC test script (run_poc_test.py) inside the Docker container..."
     - python run_poc_test.py
+
+
+style-check:
+  stage: style
+  # Use a basic Python image just for style checking
+  image: python:3.11
+  before_script:
+    - python --version
+    - pip install -r requirements.txt
+  script:
+    - echo "Checking Python syntax (compile all files)..."
+    - python -m compileall .
+    - echo "Running black in check mode..."
+    - black --check --diff .
+  allow_failure: false
