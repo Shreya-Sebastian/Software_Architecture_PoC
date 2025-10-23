@@ -1,8 +1,9 @@
 import pika
 import time
 import json
+import os
 
-RABBITMQ_HOST = "localhost"
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 QUEUE_NAME = "sensor_data_queue"
 
 

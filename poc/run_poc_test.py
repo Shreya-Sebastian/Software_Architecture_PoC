@@ -10,7 +10,7 @@ SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 8000
 SERVER_URL = f"http://{SERVER_HOST}:{SERVER_PORT}/ingest/"
 
-NUM_SENSORS = 3
+NUM_SENSORS = 5
 DISCONNECTED_SENSOR_ID = "sensor-1"
 
 # Test Durations (seconds)
@@ -42,23 +42,18 @@ def start_services():
             SERVER_HOST,
             "--port",
             str(SERVER_PORT),
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
+        ]
     )
     # Start the consumer
-    consumer_process = subprocess.Popen(
-        ["python", "consumer.py"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
+    consumer_process = subprocess.Popen(["python", "consumer.py"])
 
     # Wait for the server to be ready
     server_ready = False
     for _ in range(20):  # Try for up to 10 seconds
         try:
+            response = requests.get(
+                f"http://{SERVER_HOST}:{SERVER_PORT}/health", timeout=0.5
+            )
             response = requests.get(
                 f"http://{SERVER_HOST}:{SERVER_PORT}/health", timeout=0.5
             )

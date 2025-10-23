@@ -4,6 +4,7 @@ import pika
 from typing import List
 from datetime import datetime
 import uuid
+import os
 
 
 # Pydantic Models for Data Validation
@@ -16,7 +17,7 @@ class SensorReading(BaseModel):
 
 
 # RabbitMQ Connection Setup
-RABBITMQ_HOST = "localhost"
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 QUEUE_NAME = "sensor_data_queue"
 
 

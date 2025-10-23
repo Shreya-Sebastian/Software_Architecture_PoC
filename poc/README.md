@@ -19,7 +19,7 @@ This is a Proof of Concept demonstrating a fault-tolerant data ingestion archite
 
 1.  **Install dependencies:**
     ```shell
-    pip install fastapi uvicorn pika requests
+    pip install fastapi uvicorn pika requests pytest pytest-mock requests-mock
     ```
 
 2.  **Run the simulation:**
@@ -35,3 +35,17 @@ The script will execute a three-phase test:
 * Disruption: One sensor is disconnected. It begins buffering its data locally while the others continue to send data normally.
 
 * Resynchronization: The disconnected sensor is reconnected. It uploads its entire backlog of buffered data, which is processed alongside the real-time data from other sensors.
+
+---
+
+## Running Unit Tests
+
+The PoC includes unit tests for the sensor logic (`test_sensors.py`).
+These tests run in isolation and do not require a live RabbitMQ server.
+
+1.  **Run the tests:**
+    From the root directory, run `pytest`. Using `python -m pytest -v` ensures the correct executable is found.
+
+    ```shell
+    python -m pytest -v
+    ```
