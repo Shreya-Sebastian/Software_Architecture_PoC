@@ -28,7 +28,6 @@ build-image:
   script:
     - echo "Building Docker image..."
     # Build the image using the Dockerfile
-    # Tell Docker to use 'poc/' as the build context
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA poc/
     - echo "Pushing Docker image to registry..."
     # Push the image so test jobs can use it
@@ -57,7 +56,7 @@ run-poc:
     RABBITMQ_HOST: rabbitmq
   script:
     - echo "Running PoC test script (run_poc_test.py) inside the Docker container..."
-    - python run_poc_test.py
+    - python poc/run_poc_test.py
 
 
 style-check:
