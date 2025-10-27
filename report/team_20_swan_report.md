@@ -10,33 +10,33 @@ The smart home market is rapidly expanding, with increasing demand for automatio
 
 The goal of the Smarter Home is to make home automation transparent and accessible, especially for those with less technical expertise. The system aims to learn from how and when household devices are used. Also to identify patterns in this usage and suggest automations that align with the users’ daily routines. Each suggestion is shown with a clear explanation of the data it is based on, ensuring the transparency and the trust. The users retain full control over their information and can view or delete recorded data at any time. The interface is designed with simplicity and inclusivity in mind, ensuring that all users regardless of digital familiarity can comfortably manage and customize their home automations.
 
-This report presents the development of the Smarter Home system. It begins by analysing the problem context and stakeholders, followed by the definition of functional requirements and key quality attributes that guided the design process. This is followed by a context analysis that examines the external factors influencing the system and a discussion of the ethical implications and mitigations. The report then outlines the system architecture, explains the chosen architectural development techniques and discusses key design decisions with alternatives. After this there is the comparison between cloud and on-premises deployment and an explanation of the considered open source components. Finally, it presents the proof of concept and evaluation, demonstrating how the proposed solution addresses the identified challenges and achieves the project’s goals of accessibility and transparency.
+This report presents the development of the Smarter Home system. It begins by analysing the problem context and stakeholders in Chapter 1, followed by the definition of functional requirements and key quality attributes in Chapters 2 and 3 that guided the design process. This is followed in Chapter 4 by a context analysis that examines the external factors influencing the system and a discussion of the ethical implications and mitigations in Chapter 5. The report then outlines the system architecture, explains the chosen architectural development techniques and discusses key design decisions with alternatives which can be found in Chapters 7 through 12. After this Chapter 13 discusses the comparison between cloud and on-premises deployment and an explanation of the considered open source components is explained in Chapter 14. Finally, Chapter 15 presents the proof of concept and evaluation, demonstrating how the proposed solution addresses the identified challenges and achieves the project’s goals of accessibility and transparency.
 
-## Stakeholder Analysis
+## 1. Stakeholder Analysis
 
 The proposed smart home system is designed to observe and learn the daily routines of household inhabitants. It is built with extensibility in mind, allowing integration with a wide range of sensors and devices to accommodate different household needs and user preferences. Understanding how these features affect the various people involved in and impacted by the system is critical as each group may have different expectations. To be able to design the system in such a way that maximizes benifts, it is essential to conduct a stakeholder analysis on the system. The results of the analysis are shown in the image below.
 
 ![alt text](images/powerinterestdiagram.png)
 
-### High influence and high interest
+### 1.1 High influence and high interest
 
-The primary stakeholders are the homeowners and adult residents. These are the main users of the system and their interests are in the convenience, the comfort and the efficiency. They are the most likely to value a home that takes over the repetitive tasks. These tasks could include actions such as switching off lights and locking doors, and also adjusting thermostats. Many people will like the potential for energy savings and the cost reductions. However this group is also the most vulnerable to concerns over their privacy. The system records routines, and it could reveal sensitive information about when people are just at home. But also when they sleep or when they leave the house. If this is not handled correctly such data could become a security risk. Furthermore some users may fear losing control over their home environment if the system over-automates or offers any suggestions that might feel intrusive. Their experience will determine in the end whether the system is accepted and whether it can be integrated into the everyday life. As seen in the diagram, this group has both high influence and high interest. This means they must be closely managed to ensure the system meets their needs and earns their trust. 
+The primary stakeholders are the homeowners and adult residents. These are the main users of the system and their interests are in the convenience, the comfort and the efficiency. They are the most likely to value a home that takes over the repetitive tasks. Many people will like the potential for energy savings and the cost reductions. However this group is also the most vulnerable to concerns over their privacy. If this is not handled correctly such data could become a security risk. Their experience will determine in the end whether the system is accepted and whether it can be integrated into the everyday life. As seen in the diagram, this group has both high influence and high interest. This means they must be closely managed to ensure the system meets their needs and earns their trust.
 
 Next in the diagram we also see the manufacturers of smart appliances and sensors who represent another stakeholder group. Active engagement with the manufacturers is needed to align with their goals. Their interest lies in ensuring that their products integrate seamlessly with the proposed system. This can also then boost the sales of the smart home products. At the same time, some manufacturers may fear that they are being overshadowed or locked out if the system privileges for certain brands. Whether the system uses open standards and API’s, will also determine the reach of the system and the amount of systems and homes that are able to use the system.
 
-### High influence and low interest
+### 1.2 High influence and low interest
 
-Secondary users, such as children guests or tenants are less involved in the decision making but are still important to the system. They have high influence as they require user interfaces that are safe and simple. The access should also be restricted to only those parts of the home relevant to them. For example, a child should be able to control the lights in their own bedroom but they should not the household heating system. Guests or temporary tenants may like the convenience of automated living. But it could also feel uneasy about being monitored if they are being inside someone else their smart home. This system negatively impact the overall satisfaction of their stay. 
+Secondary users, such as children guests or tenants are less involved in the decision making but are still important to the system. They have high influence as they require user interfaces that are safe and simple. The access should also be restricted to only those parts of the home relevant to them. For example, a child should be able to control the lights in their own bedroom but they should not the household heating system. Guests or temporary tenants may like the convenience of automated living. But it could also feel uneasy about being monitored if they are being inside someone else their smart home. This system negatively impact the overall satisfaction of their stay.
 
-Data protection authorities are also implicated. Given that the system collects sensitive personal data about household routines, it will have to comply with the regulations. Therefore they will have a high influence on the overall system. These are regulations such as the General Data Protection Regulation in Europe or the California Consumer Privacy Act in the United States.
+Data protection authorities are also implicated. Given that the system collects sensitive personal data about household routines, it will have to comply with the regulations. Therefore they will have a high influence but low influence on the overall system. These are regulations such as the General Data Protection Regulation in Europe or the California Consumer Privacy Act in the United States.
 
-### Low influence and high interest
+### 1.3 Low influence and high interest
 
-Another import group of stakeholders to think about consists of the system developers and technology providers. Their role is to ensure the technical robustness of the platform. Particularly in integrating the sensors and devices from different brands. They also carry responsibility for designing the machine learning models that detect the user routines. Developers should go for a balance between personalization and privacy. Also compatibility with existing platforms such as Google Home, Amazon Alexa or Apple HomeKit will be essential to make the system a success. As the platforms are already in the market, they will have high interest to engage in a way that allows them to grow and to be integrated. 
+Another import group of stakeholders to think about consists of the system developers and technology providers. Their role is to ensure the technical robustness of the platform. Particularly in integrating the sensors and devices from different brands. They also carry responsibility for designing the machine learning models that detect the user routines. Developers should go for a balance between personalization and privacy. Also compatibility with existing platforms such as Google Home, Amazon Alexa or Apple HomeKit will be essential to make the system a success. As the platforms are already in the market, they will have high interest to engage in a way that allows them to grow and to be integrated.
 
-### Low influence and low interest
+### 1.4 Low influence and low interest
 
-Finally, low influence and low interest stakeholders can include the utility providers and the energy companies, who may see some opportunities in collaboration with the system. For example data on energy consumption could reduce the environmental impact of the household. Similarly insurers and real estate stakeholders are interested because smart homes can reduce risks such as fire or flooding. This can increase the value of the home. Although they have low influence and interest, it is still important to keep this group in mind.
+Finally, low influence and low interest stakeholders includes the utility providers and the energy companies, who may see some opportunities in collaboration with the system. For example data on energy consumption could reduce the environmental impact of the household. Similarly insurers and real estate stakeholders are interested because smart homes can reduce risks such as fire or flooding. This can increase the value of the home. Although they have low influence and interest, it is still important to keep this group in mind.
 
 ---
 
@@ -44,75 +44,87 @@ Throughout these stakeholders, there exist potential conflicts. Personalization 
 
 In conclusion, the smart home system has significant potential to make automation available to mass consumers on a more affordable basis through reduced learning needs and smart recommendations. Its stakeholders are homeowners and residents, but also developers, manufacturers, regulators and even insurers. Each group has its own interests and frictions and through well designed transparency and stakeholder engagement, the system can provide benefit to all of the people that are related to it.
 
-## Domain model
+## 2 Domain model
 
 The model in the figure below shows the most important objects and relationships of the domain. The user is central to this system. They have some degree of control over most other objects in the system, as we want to emphasize user control. The only object the user does not access of its own accord is the Automation Suggestion System, which can only make suggestions to the user.
 
 ![Domain model](images/domain.png)
 
-## Functional requirements
+## 3 Functional requirements
 
-The Smarter Home system is designed to create an intelligent and user friendly environment by using automation. The detailed functional requirements for this system are provided in [Appendix A](../appendix/team_20_appendix.md). This section summarizes the core functionalities and shows their operation through example user scenarios.
+[Appendix A](../appendix/team_20_appendix.md) outlines the key functional requirements for the Smarter Home system. It defines how users and devices interact within the platform. This while focussing on control, automation and data management. The system supports a main user who can manage other users and their permissions. Users can add, remove and operate devices as well as create automations that respond to collected and analysed data. Devices continuously record and store timestamped data, which users can review or delete. The system also features automation suggestions, using recorded data to identify household routines and propose helpful automations that users can customize before approval. This section summarizes the core functionalities and shows their operation through example user scenarios.
 
-### Overview
+### 3.1 Overview
 
 The Smarter Home allows a main user to manage access, configure devices and create automations based on generated suggestions. Devices record operational data and this is then is analyzed to detect user routines. Users can review and accept or reject these suggestions still maintaining full control over their smart environment.
 
-### Scenarios
+### 3.2 Scenarios
 
-The following scenarios illustrate how the Smarter Home system identifies user behavior patterns and generates useful automation suggestions to improve convenience and efficiency.
+To understand the functionality of our system, we have devised the following scenarios which illustrate how the Smarter Home system identifies user behavior patterns and generates useful automation suggestions to improve convenience and efficiency.
 
-1. The system notices that lights that are turned on by 7:00 PM are dimmed to a lower intensity. The system notifies the user of a detected routine, and suggests an automation that reduces the intensity of each light that is on by 7:00 PM. The user reviews this suggestion and enables the automation. 
+#### 3.2.1 Scenario 1
 
-2. The system notices that the heating is turned down after the door opens and closes in the morning. The system is suggests an automation that reduces the heat after the door is opened and closed. The user alters this automation to make sure this only happens before 10:00 AM. After the change the automation is enabled.
+The system notices a pattern which is that lights that are turned on by 7:00 PM are dimmed to a lower intensity. It alerts the user of a detected routine and suggests an automation that reduces the intensity of each light that is on by 7:00 PM. The user now reviews this suggestion and decides to enable the automation.
+
+#### 3.2.1 Scenario 2
+
+The system notices that the heating is turned down after the door opens and closes in the morning. It then suggests an automation that reduces the heat after the door is opened and closed. The user edits this automation to make sure this only applies before 10:00 AM, and then activates the automation.
 
 ![State Diagram](images/stateDiagram.png)
 
 This state diagram shows the flow of the Smarter Home system when identifying and implementing an automation suggestion. It shows how the system collects device data detects, user behavior and generates a corresponding automation proposal. Once the user reviews and enables the automation, it becomes active and executes automatically according to the detected routine. This process reflects the scenarios described above, where the system learns from repeated actions, such as dimming lights at 7:00 PM and transforms them into smart user-approved automations that enhance convenience and efficiency of their home.
 
-## Context Analysis
+To learn from the scenarios, we can see that we already have to think about the relevant architectural aspects. As there needs to be analysis on the data, the data needs to be collected and stored in a central storage. But with data storage it is always important to keep transparency in mind. Also the sensors have to be connected, and the sensors should also be able to reconnect and resynchronise in case of failures.
+
+## 4 Context Analysis
 
 A thorough context analysis is essential to understand the factors influencing the **“Smarter Home System”** project and to identify areas that must be managed for successful implementation.
 
-### External Risks and Dependencies
+### 4.1 External Risks and Dependencies
 
-**Hardware and Sensors**  
-The system's overall performance depends on the functioning of various smart home devices, like motion sensors, smart lights, thermostats and other IoT devices. Sensor defects can cause data loss which in turn can affect the system’s ability to learn routines and suggest properly informed automations. For example, a defective motion sensor may not register the user's presence which could lead to an automation incorrectly turning off the lights while the user is still present in the room. 
+#### 4.1. Hardware and Sensors
 
-**Cloud Services and Connectivity**  
+The system's overall performance depends on the functioning of various smart home devices, like motion sensors, smart lights, thermostats and other IoT devices. Sensor defects can cause data loss which in turn can affect the system’s ability to learn routines and suggest properly informed automations. For example, a defective motion sensor may not register the user's presence which could lead to an automation incorrectly turning off the lights while the user is still present in the room.
+
+#### 4.1. Cloud Services and Connectivity
+
 Several features of the system such as behaviour learning, routine suggestions, and remote access, depend on stable internet connectivity. Outages or latency issues can reduce the system's reliability and consequently user satisfaction (Moldstud, 2023). An internet outage not only temporarily prevents remote access for the user but also creates a data gap. Constant data loss can affect the system's learning of the user's routine behaviour.
 
-**Software Integration**  
+#### 4.1.2 Software Integration
+
 The system must integrate seamlessly with multiple smart home platforms like Google Home and Amazon Alexa. It must also be compatible with wireless technologies like Zigbee, Z-Wave, or Wi-Fi. Interoperability is essential for ensuring security of the sytem which positively influences consumer trust. Poor integration can cause compatibility issues and increased cybersecurity risks (OECD, 2018).
 
-**Machine Learning and Data Analytics**  
-AI-driven suggestions rely on machine learning algorithms that can accurately recognize patterns in user behavior and generate informed automations. This requires continuous access to validated data from user interactions and connected devices. Incorrect assumptions made by the system about user routines could lead to frustration and disengagement (Fischer et al.).  For example, the system could misinterpret one-time events like parties as a new daily routine and begin inconveniently suggesting late-night lighting. The system is therefore dependent on its ability to distinguish between actual patterns and exceptions to provide genuinely helpful automations.
+#### 4.1.3 Machine Learning and Data Analytics
 
-**Maintenance and Updates**  
-Continuous updates are essential for maintaining security and performance over time. Structured maintenance plans help prevent devices from becoming obsolete or vulnerable once manufacturer support ends (OECD, 2018). The evolving nature of data protection laws and smart home standards requires the system to adapt continuously (Alshammari and Simpson). Failure to adhere to changing standards could cause elements of our system to become unresponsive, breaking already established user routines. 
+AI-driven suggestions rely on machine learning algorithms that can accurately recognize patterns in user behavior and generate informed automations. This requires continuous access to validated data from user interactions and connected devices. Incorrect assumptions made by the system about user routines could lead to frustration and disengagement (Fischer et al.). For example, the system could misinterpret one-time events like parties as a new daily routine and begin inconveniently suggesting late-night lighting. The system is therefore dependent on its ability to distinguish between actual patterns and exceptions to provide genuinely helpful automations. Moreover, explainability is also relevant, while using the machine learning it is important for the user to understand why certain suggestions are given.
 
-**Regulatory Compliance**  
-Compliance with data protection and privacy regulations like the GDPR is essential. The system depends on legal frameworks for data storage, data processing, and user consent, which must be continually monitored as regulations change (Office of the Victorian Information Commissioner, 2023). A change in legislation, such as an algorithmic explanation becoming mandatory, could then require significant revising of the system's data learning architecture to remain compliant. 
+#### 4.1.4 Maintenance and Updates
 
-**User Engagement and Feedback**  
-The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces and user trust (Zigpoll, 2023). If the system is overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.). The system's AI requires continuous user interaction to refine its understanding of their preferences. It depends on users actively confirming, rejecting, or modifying the automations it suggests. If the interface for providing feedback is inconvenient, users may become passive. The user may also expect the generated suggestions to come with explanations of why that suggestion is being proposed to the user. This addition of explanations help users understand how the system operates better, increasing overall trust in the system. 
+Continuous updates are essential for maintaining security and performance over time. Structured maintenance plans help prevent devices from becoming obsolete or vulnerable once manufacturer support ends (OECD, 2018). The evolving nature of data protection laws and smart home standards requires the system to adapt continuously (Alshammari and Simpson). Failure to adhere to changing standards could cause elements of our system to become unresponsive, breaking already established user routines.
 
+#### 4.1.5 Regulatory Compliance
+
+Compliance with data protection and privacy regulations like the GDPR is essential. The system depends on legal frameworks for data storage, data processing, and user consent, which must be continually monitored as regulations change (Office of the Victorian Information Commissioner, 2023). A change in legislation, such as an algorithmic explanation becoming mandatory, could then require significant revising of the system's data learning architecture to remain compliant.
+
+#### 4.1.6 User Engagement and Feedback
+
+The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces and user trust (Zigpoll, 2023). If the system is overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.). The system's AI requires continuous user interaction to refine its understanding of their preferences. It depends on users actively confirming, rejecting, or modifying the automations it suggests. If the interface for providing feedback is inconvenient, users may become passive. The user may also expect the generated suggestions to come with explanations of why that suggestion is being proposed to the user. This addition of explanations help users understand how the system operates better, increasing overall trust in the system.
 
 To summarize these dependencies, the context diagram below illustrates the system's relationship with external entities:
 
 ![Context Diagram](images/Context_Diagram.png)
 
-## Ethical Implications and Mitigations
+## 5 Ethical Implications and Mitigations
 
 Although smart homes offer significant benefits in convenience and efficiency, they also introduce critical ethical issues regarding how user data is stored and used. This project will address several of the key privacy and security concerns that arise from the use of smart home technology.
 
-A major ethical concern posed by smart homes is privacy. The fundamental operative principle behind our smart home system is analyzing user data to identify patterns of user behavior and suggest automations for their routines. However, this would automatically involve constantly monitoring and recording user data, and potentially exposing this data to third-party companies that are integrated into the system. Since this data has to be stored, it could become the target for potential misuse if compromised. Sensitive personal data could be used to target the user for profiling, advertising or manipulation. As smart homes are vulnerable and prone to hacking, the user's lack of awareness of cybersecurity practices often lead to smart homes being exposed to potential threats. 
+A major ethical concern posed by smart homes is privacy. The fundamental operative principle behind our smart home system is analyzing user data to identify patterns of user behavior and suggest automations for their routines. However, this would automatically involve constantly monitoring and recording user data, and potentially exposing this data to third-party companies that are integrated into the system. Since this data has to be stored, it could become the target for potential misuse if compromised. Sensitive personal data could be used to target the user for profiling, advertising or manipulation. As smart homes are vulnerable and prone to hacking, the user's lack of awareness of cybersecurity practices often lead to smart homes being exposed to potential threats.
 
-Therefore the software architecture has to build preemptive solutions into the smart home system to combat this. One possible solution could be having sensitive data stored and processed locally rather than in cloud. In this model, the cloud's role could be limited to non-sensitive tasks like providing software updates or facilitating remote access via end-to-end encrypted commands, rather than acting as a repository for user data. It is also essential to collect only mandatory data for functionality to maintain user trust. Another solution is encrypting sensitive data during transit and rest. Sensitive data can be stored in separate databases in local hubs. The system can also be implemented using role-based access control where each microservice accesses only what it needs. Security protocols can also be used when handling data. Another measure that can be taken is using the daily device usage blueprint to track any irregular practices to identify a third-party and alerting the user. 
+Therefore the software architecture has to build preemptive solutions into the smart home system to combat this. One possible solution could be having sensitive data stored and processed locally rather than in cloud. In this model, the cloud's role could be limited to non-sensitive tasks like providing software updates or facilitating remote access via end-to-end encrypted commands, rather than acting as a repository for user data. It is also essential to collect only mandatory data for functionality to maintain user trust. Another solution is encrypting sensitive data during transit and rest. Sensitive data can be stored in separate databases in local hubs, where the local hubs are dedicated devices or gateways within the home that handle the storage and management of the sensitive data locally, instead of sending it to the cloud. The system can also be implemented using role-based access control where each microservice accesses only what it needs. Security protocols can also be used when handling data. Another measure that can be taken is using the daily device usage blueprint to track any irregular practices to identify a third-party and alerting the user.
 
 Another ethical concern posed by smart homes is subtle and not as overt as the security issues. This is related to the long-term physical and psychological impact of smart homes on the user. Living in smart homes could lead to a gradual reduction of control if the system does not rely on user input. This can best be addressed by providing the user with the choice to automate a task. The user can make an informed decision rather than being subconsciously going along with automations implemented by the system. The user can also have the choice to de-automate any task at any time. The system can be made consultative and interactive to inform the user of potential risks and provide agency to the user to make the final decision regarding permitting the automation.
 
-## Key Quality Attributes
+## 6 Key Quality Attributes
 
 The following quality attributes define the non-functional requirements of the Smarter Home system.
 
@@ -122,31 +134,27 @@ The following quality attributes define the non-functional requirements of the S
 
 **Usability**: One of the goals of the Smarter Home is to be as accessible as possible. To achieve this goal, user interfaces must be simple and intuitive. Recommendations must show what information they're based on, so that the system can be trusted by technical and non-technical people alike.
 
-**Security**: Only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
+**Security**: This is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target. Moreover, only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
 
-**Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails.
+**Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails. In this case, the system represents the backend, where the devices are local devices which should have a way to keep running if e.g. the internet fails.
 
 **Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
 
-**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients.
+**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients. We plan to integrate with big sensor providers from which we can generate a lot of data.
 
-### Privacy vs. Correctness
+### 6.1 Privacy vs. Correctness
 
 Privacy is a main concern with smart home systems, due to the large amounts of data IoT sensors collect inside users' homes. This data might not be immediately sensitive, but can present security concerns in aggregate. The routines can only be accurately identified based on accurate data, and privacy is therefore a direct tradeoff with the correctness of the system. By being completely transparent about the data collected, and allowing the user to inspect this data, they are empowered to make a more informed decision about the data they want recorded and or stored.
 
-### Security
-
-Security is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target.
-
-#### Security vs. Extensibility
+### 6.2 Security vs. Extensibility
 
 As every device connected to the system is an avenue for attack, constraints need to be placed on what devices may access the Smarter Home. This means that devices may enter the market that cannot be supported without compromising security. To make sure our goals regarding security and thereby privacy and availability are met we can only allow connections with devices that are considered secure.
 
-## System level architecture
+## 7 System level architecture
 
 Now that the quality attributes are defined, we continue with a discussion of different types of architectures at the system level. We will select them with the quality attributes in mind.
 
-### Monolithic Architecture
+### 7.1 Monolithic Architecture
 
 In a monolithic architecture, the whole system is built as a single deployable unit. The logic runs in a single process and the application may be modularized by simply using features of the programming language, but in general, remains tightly coupled. Due to its simplicity, a monolithic architecture has the following advantages:
 
@@ -155,35 +163,35 @@ In a monolithic architecture, the whole system is built as a single deployable u
 
 However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures (Powell & Smalley)(Ponce et al. 2019).
 
-### Microkernel Architecture
+### 7.2 Microkernel Architecture
 
 In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes require a complete redeployment (Thomas, 2025).
 
-### Microservice Architecture
+### 7.3 Microservice Architecture
 
 In a microservice architecture, the system is split into "independently deployable, loosely coupled, components, a.k.a. services."(Richardson) Each service runs in its own process and is responsible for its own subdomain. This division makes a microservice architecture extremely friendly to change. Individual components can be updated, tested and deployed without intruding on the functionality of others, allowing continuous delivery. Furthermore, when a single service fails, the other service may stay running.
 
 However, when looking at the system as a whole, microservices do introduce complexity, mainly in the communication between services. There are increased security risks, because data is now processed over multiple services potentially opening up more avenues to attack (Powell & Smalley).
 
-### Conclusion
+### 7.4 Conclusion
 
 We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
 
-## Trade-off analysis
+## 8 Trade-off analysis
 
 Each of the architectural styles have some pros and cons that are applicable to smart home systems. These are summarized in the table below. The microservices architecture was finally selected since it offers high maintainability, scalability and complexity.
-| **Architecture** | **Scalability** |	**Maintainability** |	**Data Integrity** |	**Responsiveness** |	**Privacy** |	**Complexity** | 
+| **Architecture** | **Scalability** | **Maintainability** | **Data Integrity** | **Responsiveness** | **Privacy** | **Complexity** |
 | ---------------- | --------------- | -------------------- | ------------------ | ------------------- | ------------ | -------------- |
-| Monolithic |	Low |	Low	| High |	High |	High |	Low |
-| Microkernel |	Medium |	High |	High |	High |	Medium |	Medium |
-| Event-driven |	High |	Medium |	Medium |	Medium |	Low |	High |
-| Microservice |	High |	High |	Medium |	Medium |	Medium |	High |
+| Monolithic | Low | Low | High | High | High | Low |
+| Microkernel | Medium | High | High | High | Medium | Medium |
+| Event-driven | High | Medium | Medium | Medium | Low | High |
+| Microservice | High | High | Medium | Medium | Medium | High |
 
-The aim of the system is to offer robust, secure and smarter choices. The architectural styles offer these options in different branches. Here, since microservices is the style that is the closest to what is expected of our system. 
+The aim of the system is to offer robust, secure and smarter choices. The architectural styles offer these options in different branches. Here, since microservices is the style that is the closest to what is expected of our system.
 
-## C4 Software Architecture Views
+## 9 C4 Software Architecture Views
 
-### Context Views
+### 9.1 Context Views
 
 The context view covers defines the relationship between Smarter home system and external parties or systems. It shows the interactions between users, devices and third-party platforms with the system when it operates.
 
@@ -195,7 +203,7 @@ The diagram identifies three external actors and one main system:
 4. Devices/Sensors - They are physical IoT devices that generate data and receive commands.
 5. Third-party Platforms - They are external agencies which connect through APIs.
 
-**Interactions**
+#### 9.1.1 Interactions
 
 1. The user interacts with the system through app/UI.
 2. Devices send sensor data to Local Hubs.
@@ -204,13 +212,14 @@ The diagram identifies three external actors and one main system:
 
 ![Context View](images/context_view.png)
 
+### 9.2 Component View
 
-### Component View ###
 The component view shows the decomposition of the system's internal functionality into modules, services and other building blocks. Each component has a distinct responsibility and communicates via defined interfaces.
 
 The Smarter home system can be divided into two main environments - Local Hub and Cloud Services.
 
 **Local Hub:** It is responsible for local processing and ensuring that automations work even offline.
+
 1. Core - It orchestrates communication between all local components.
 2. Device Communication - It interferes with sensors using standard protocols like Wi-Fi.
 3. Routine Detection - It analyzes incoming event streams to identify user behavior patterns.
@@ -218,11 +227,13 @@ The Smarter home system can be divided into two main environments - Local Hub an
 5. User Management - It handles user authentication, role-based access and permissions.
 
 **Cloud Services:** It's responsible for data storage and analytics.
+
 1. API Gateway - It exposes REST APIs to the app, Local Hub and third-party systems.
 2. Authentication - It manages identity verification.
 3. Notifications - It sends user alerts about new automations, security events or system updates.
 
 **Shared Infrastructure:**
+
 1. Database - It's used for long-term storage of user profiles, device data, automation logs and learned models.
 2. Message Queue (RabbitMQ) - It decouples data ingestion and processing for scalability and fault tolerance.
 
@@ -234,7 +245,7 @@ The Smarter home system can be divided into two main environments - Local Hub an
 
 ![Component View](images/component_view.png)
 
-## Container view
+## 10 Container view
 
 In this section we show the components of the Smart Home system. The diagram below shows the system is composed of two parts: One part on the cloud and one part on a local hub. The different boxes inside the cloud depict different microservices. Inside the local hub, the different boxes depict plug-ins. The cylinders depict databases. As per the microkernel architecture, plug-ins in the local hub only communicate with the core.
 
@@ -242,30 +253,30 @@ In this section we show the components of the Smart Home system. The diagram bel
 
 Cloud building blocks:
 
-| **Building block** | **Description** |
-| ------------------ | --------------- |
-| API gateway | Entry point for all requests to the cloud and can forward requests to the local hub (Richardson). |
-| Notifications | Responsible for notifying the user directly on their mobile device. |
-| Routine detection | Reads the sensor data inside the database and infers routines from them. |
-| Database | Cloud storage that holds user information for authentication and sensor data for routine detection. |
+| **Building block** | **Description**                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------- |
+| API gateway        | Entry point for all requests to the cloud and can forward requests to the local hub (Richardson).   |
+| Notifications      | Responsible for notifying the user directly on their mobile device.                                 |
+| Routine detection  | Reads the sensor data inside the database and infers routines from them.                            |
+| Database           | Cloud storage that holds user information for authentication and sensor data for routine detection. |
 
 Local hub building blocks:
 
-| **Building block** | **Description** |
-| ------------------ | --------------- |
-| Core | Core of the microkernel architecture of the local hub. Calls other plug-ins when needed. |
-| Cloud synchronization | Responsible for offloading sensor data to the cloud database. |
-| Automation | Runs configured automations. |
-| Device communication | Responsible for building and interpreting requests to and from smart home devices. |
-| Authentication | Makes sure only authenticated users can interact with the Smarter Home. |
-| Automation suggestion | Interprets detected routine to suggest automations to the user. |
-| User Management | Manages authentication levels of all users of the Smarter Home. |
-| Network Module | Entry point for all requests to the local hub. |
-| Database | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage. |
+| **Building block**    | **Description**                                                                                                                                    |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core                  | Core of the microkernel architecture of the local hub. Calls other plug-ins when needed.                                                           |
+| Cloud synchronization | Responsible for offloading sensor data to the cloud database.                                                                                      |
+| Automation            | Runs configured automations.                                                                                                                       |
+| Device communication  | Responsible for building and interpreting requests to and from smart home devices.                                                                 |
+| Authentication        | Makes sure only authenticated users can interact with the Smarter Home.                                                                            |
+| Automation suggestion | Interprets detected routine to suggest automations to the user.                                                                                    |
+| User Management       | Manages authentication levels of all users of the Smarter Home.                                                                                    |
+| Network Module        | Entry point for all requests to the local hub.                                                                                                     |
+| Database              | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage. |
 
-Besides detecting routines, the cloud acts as an intermediary between remote users and the local hub, allowing users to interact with their devices from outside their home. Similarly, the local hub may notify the users via the cloud. Users may also interact with their local hub directly if they are on the same local network. 
+Besides detecting routines, the cloud acts as an intermediary between remote users and the local hub, allowing users to interact with their devices from outside their home. Similarly, the local hub may notify the users via the cloud. Users may also interact with their local hub directly if they are on the same local network.
 
-### Class View ###
+### 10.1 Class View
 
 The Class view depicts the internal code structure. It focuses on logical organization rather than runtime behaviour. This view is focused on the entirety of the Smarter home system and isn't limted to the PoC of the assignment which focuses on particular functionalities.
 
@@ -285,7 +296,7 @@ The Class view depicts the internal code structure. It focuses on logical organi
 
 ![Class View](images/class_view.png)
 
-## Runtime view
+## 11 Runtime view
 
 In this section we discuss a runtime view illustrating how the cloud and local hub work together to connect the user to their home. The diagram below shows the interactions between the local hub,the cloud and their plug-ins and microservices, when the user wants to update a device. For example, updating a device could mean turning a light on or off.
 
@@ -293,11 +304,11 @@ In this section we discuss a runtime view illustrating how the cloud and local h
 
 In this diagram, the cloud connects the user to the local hub, allowing the user to make requests remotely. The request is forwarded to the network module on the local hub. The network module passes this request to the core of the hub, as no plug-ins interact with each other. To interact with the device the hub needs to build a request adhering to the protocol used by the device. To do this, the core uses the device communication plug-in to build the appropriate request. This request is passed to the network module which sends it to the device. The device then returns a message to the hub, which is passed through the network module to the core. The core then uses the device communication plug-in again to parse the response, and can then update the database.
 
-## Pricing model
+## 12 Pricing model
 
 The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
 
-## Selecting Open Source Components
+## 13 Selecting Open Source Components
 
 The Smarter Home system can and should benefit greatly from existing open-source technologies, which offer a solid foundation for building the reliable and flexible smart home solutions. Open-source tools have multiple advantages such as being well-tested, widely supported and that they are freely available. This is making them an ideal choice for a project as ours that values transparency and adaptability. By combining different open-source components, the system can cover everything from the data collection and storage to the automations and user interaction without reinventing the wheel again.
 
@@ -317,22 +328,19 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
+## 14 Cloud vs on Premises Development
 
-## Cloud vs on Premises Development 
+There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware.
 
-There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware. 
-
-For a public cloud model, the problem of scalability is solved as it makes use of a provider that is wholy dedicated to scaling. The problems of sovereignty and user privacy still persist as this model forces all sensitive user data to reside on third-party servers. 
+For a public cloud model, the problem of scalability is solved as it makes use of a provider that is wholy dedicated to scaling. The problems of sovereignty and user privacy still persist as this model forces all sensitive user data to reside on third-party servers.
 
 A Hybrid approach would be ideal as real-time tasks can be handeled locally and less sensitive/heavier computation can be handeled on the cloud. In this manner, high sovereignty and user privacy can be maintained while still benefitting from public cloud services.
 
+## 15 Proof of Concept
 
-## Proof of Concept
+The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture.
 
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture. 
-
-
-### Problems Addressed
+### 15.1 Problems Addressed
 
 The PoC directly addresses two fundamental challenges in IoT systems:
 
@@ -342,18 +350,15 @@ The PoC directly addresses two fundamental challenges in IoT systems:
 2. **Lack of Modularity**  
    A simple architecture might have sensors sending data directly to a service that also processes it immediately. This tight coupling means that if the processing service is slow, under heavy load, or temporarily down, the entire ingestion process halts, and sensors can no longer send their data.
 
-
-### Architectural Solution
-
+### 15.2 Architectural Solution
 
 The PoC architecture is as follows:
 
 ![PoC architecture](images/PoC_Architecture.png)
 
-
 To solve the key problems mentioned, the PoC employs several architectural decisions:
 
-#### 1. Tackling the problem of Data Integrity
+#### 15.2.1 Tackling the problem of Data Integrity
 
 - **Store and Forward Mechanism**  
   Sensors are designed to buffer data to a local file if they cannot connect to the ingestion server. This prevents data loss during network outages by storing it locally and forwarding it once the connection is re-established.
@@ -370,7 +375,7 @@ To solve the key problems mentioned, the PoC employs several architectural decis
 - **Data Validation at Entry**  
   The ingestion server uses **Pydantic models** to validate the structure and data types of all incoming data. This acts as a gateway, preventing corrupted or malformed data from ever entering the message queue and the rest of the processing pipeline.
 
-#### 2. Addressing Scalability
+#### 15.2.2 Addressing Scalability
 
 - **Decoupled Architecture**  
   The message queue is the central element that allows components to scale independently. The ingestion server can handle a high volume of incoming sensor data without being slowed down by the consumer's processing speed. The queue absorbs traffic bursts, allowing the system to handle load gracefully.
@@ -384,8 +389,7 @@ To solve the key problems mentioned, the PoC employs several architectural decis
 - **Lightweight Ingestion Server**  
   The ingestion server's role is minimal: accept, validate, and forward. By offloading processing to the consumers, the server remains lightweight and can handle a high number of concurrent HTTP connections, making the data ingestion point highly scalable.
 
-
-### Evaluation
+### 15.3 Evaluation
 
 The current test is an automated script that simulates a real-world network failure to validate the system's fault tolerance and data integrity.
 
