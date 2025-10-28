@@ -107,7 +107,10 @@ class Sensor:
                     )
 
                     # Create chunk from the front of the deque (don't remove yet)
-                    chunk = [self.buffer[i] for i in range(min(len(self.buffer), self.CHUNK_SIZE))]
+                    chunk = [
+                        self.buffer[i]
+                        for i in range(min(len(self.buffer), self.CHUNK_SIZE))
+                    ]
 
                     if self._send_data(chunk):
                         # Remove sent items from in-memory buffer

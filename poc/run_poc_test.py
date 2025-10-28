@@ -14,7 +14,7 @@ SERVER_URL = f"http://{SERVER_HOST}:{SERVER_PORT}/ingest/"
 # Choose test: "default", "staggered_failure"
 TEST_SCENARIO = "default"
 
-# Params for default 
+# Params for default
 NUM_SENSORS = 5
 PHASE_1_NORMAL_DURATION = 10
 PHASE_2_DISRUPTION_DURATION = 20
@@ -90,11 +90,14 @@ def stop_services(server_process, consumer_process):
         consumer_process.wait()
     print("Services Stopped.")
 
+
 # TEST SCENARIOS
 def run_scenario_default(sensors):
 
-    print(f"\n--- Default Scenario: ({PHASE_1_NORMAL_DURATION}s -> {PHASE_2_DISRUPTION_DURATION}s -> {PHASE_3_RESYNC_DURATION}s) ---")
-    
+    print(
+        f"\n--- Default Scenario: ({PHASE_1_NORMAL_DURATION}s -> {PHASE_2_DISRUPTION_DURATION}s -> {PHASE_3_RESYNC_DURATION}s) ---"
+    )
+
     disconnected_sensors = []
     for sensor_id in DISCONNECTED_SENSOR_IDS:
         sensor = next((s for s in sensors if s.sensor_id == sensor_id), None)
@@ -102,11 +105,11 @@ def run_scenario_default(sensors):
             disconnected_sensors.append(sensor)
         else:
             print(f"Warning: Sensor '{sensor_id}' not found. Will be skipped.")
-            
+
     if not disconnected_sensors:
         print("No sensors to disconnect. Skipping test.")
         return []
-    
+
     # Phase 1: Normal Operation
     print(f"\n[Phase 1] Regular Operation ({PHASE_1_NORMAL_DURATION}s)")
     print("All sensors are connected and sending data.")
@@ -133,19 +136,19 @@ def run_scenario_default(sensors):
 
 
 def run_scenario_staggered_failures(sensors):
-    
-    #Tests sensors disconnecting and reconnecting at different overlapping times
+
+    # Tests sensors disconnecting and reconnecting at different overlapping times
     print("\n--- Staggered Failure Test ---")
-    
+
     s1 = next((s for s in sensors if s.sensor_id == "sensor-1"), None)
     s2 = next((s for s in sensors if s.sensor_id == "sensor-2"), None)
-    
+
     if not s1 or not s2:
         print("Warning: Test requires at least 2 sensors")
         return []
 
     disconnected_sensors_for_verification = [s1, s2]
-    
+
     try:
         print("\n[Time 0s] All sensors connected.")
         time.sleep(5)
@@ -153,26 +156,35 @@ def run_scenario_staggered_failures(sensors):
         print(f"\n[Time 5s] Disconnecting {s1.sensor_id}")
         s1.is_connected = False
         time.sleep(5)
-        
-        print(f"\n[Time 10s] Disconnecting {s2.sensor_id}. ({s1.sensor_id} is still offline)")
+
+        print(
+            f"\n[Time 10s] Disconnecting {s2.sensor_id}. ({s1.sensor_id} is still offline)"
+        )
         s2.is_connected = False
         time.sleep(10)
-        
-        print(f"\n[Time 20s] Reconnecting {s1.sensor_id}. (Resyncing backlog from T5-T20).")
+
+        print(
+            f"\n[Time 20s] Reconnecting {s1.sensor_id}. (Resyncing backlog from T5-T20)."
+        )
         s1.is_connected = True
         time.sleep(5)
-        
-        print(f"\n[Time 25s] Reconnecting {s2.sensor_id}. (Resyncing backlog from T10-T25).")
-        print(f"({s1.sensor_id} is now sending real-time data alongside {s2.sensor_id}'s backlog).")
+
+        print(
+            f"\n[Time 25s] Reconnecting {s2.sensor_id}. (Resyncing backlog from T10-T25)."
+        )
+        print(
+            f"({s1.sensor_id} is now sending real-time data alongside {s2.sensor_id}'s backlog)."
+        )
         s2.is_connected = True
         time.sleep(10)
-        
+
         print("\n[Time 35s] Test complete. All sensors online.")
 
     except KeyboardInterrupt:
         print("\nStaggered test interrupted.")
-        
+
     return disconnected_sensors_for_verification
+
 
 def main():
     cleanup()
@@ -197,7 +209,9 @@ def main():
         if TEST_SCENARIO == "default":
             disconnected_sensors_for_verification = run_scenario_default(sensors)
         elif TEST_SCENARIO == "staggered_failure":
-            disconnected_sensors_for_verification = run_scenario_staggered_failures(sensors)
+            disconnected_sensors_for_verification = run_scenario_staggered_failures(
+                sensors
+            )
         else:
             print(f"Unknown TEST_SCENARIO: '{TEST_SCENARIO}'. Halting.")
 
@@ -222,7 +236,9 @@ def main():
             for sensor in disconnected_sensors_for_verification:
                 buffer_file = sensor.buffer_file
                 if not os.path.exists(buffer_file):
-                    print(f"SUCCESS - Buffer file '{buffer_file}' was successfully cleared.")
+                    print(
+                        f"SUCCESS - Buffer file '{buffer_file}' was successfully cleared."
+                    )
                 else:
                     try:
                         with open(buffer_file, "r") as f:
@@ -236,9 +252,11 @@ def main():
                             )
                             all_clear = False
                     except Exception as e:
-                        print(f"ERROR - Could not read buffer file '{buffer_file}': {e}")
+                        print(
+                            f"ERROR - Could not read buffer file '{buffer_file}': {e}"
+                        )
                         all_clear = False
-            
+
             if all_clear:
                 print("\nOverall Result: PASSED")
             else:
