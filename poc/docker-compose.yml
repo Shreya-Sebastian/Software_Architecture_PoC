@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  # The RabbitMQ message broker service
+  # RabbitMQ message broker
   rabbitmq:
     image: "rabbitmq:3-management" 
     hostname: "rabbitmq"           
@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # The FastAPI Ingestion Server
+  # FastAPI Ingestion Server
   ingestion-server:
     build: .  
     ports:
@@ -26,7 +26,7 @@ services:
       rabbitmq:
         condition: service_healthy # Wait for RabbitMQ to be healthy before starting
 
-  # The Python data consumer
+  # Consumer
   consumer:
     build: . 
     command: "python consumer.py" 
