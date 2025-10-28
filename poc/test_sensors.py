@@ -39,7 +39,6 @@ def sensor(cleanup_buffer, mocker):
 
 # Test Cases
 
-
 # Tests if the sensor correctly loads pre-existing buffer file on init.
 def test_sensor_init_loads_buffer(cleanup_buffer):
     # Create a fake buffer file
@@ -83,13 +82,17 @@ def test_sensor_buffers_on_failure(sensor, requests_mock, error_response):
 
 
 # Tests scalability - verifies that sensor sends its buffer in chunks.
-def test_sensor_sends_buffer_in_chunks(sensor, requests_mock):
+def test_sensor_sends_buffer_in_chunks(sensor, requests_mock, mocker):
 
     sensor.CHUNK_SIZE = 100
 
     # Create a fake buffer of 250 items
     fake_readings = [{"id": i} for i in range(250)]
     sensor.buffer = deque(fake_readings)
+    
+    # Mock a new reading
+    new_reading = {"id": 999}
+    mocker.patch.object(sensor, "generate_reading", return_value=new_reading)
 
     # Mock the server to always succeed
     requests_mock.post(TEST_URL, status_code=200, json={"status": "accepted"})
@@ -97,18 +100,19 @@ def test_sensor_sends_buffer_in_chunks(sensor, requests_mock):
     sensor.is_connected = True
     sensor.run()  # Run one iteration
 
-    # Verify 4 requests were made:
-    # 3 for the chunks (100, 100, 50) and 1 for the new reading.
-    assert requests_mock.call_count == 4
+    # Verify 2 requests were made:
+    # 1 for the first chunk (100) and 1 for the new reading.
+    assert requests_mock.call_count == 2
 
-    # Verify the payloads of the chunked requests
+    # Verify the payloads of the requests
     assert len(requests_mock.request_history[0].json()) == 100
-    assert len(requests_mock.request_history[1].json()) == 100
-    assert len(requests_mock.request_history[2].json()) == 50
+    assert requests_mock.request_history[0].json()[0] == {"id": 0}
+    assert requests_mock.request_history[1].json() == [new_reading]
 
-    # Verify the buffer was cleared from memory and disk
-    assert len(sensor.buffer) == 0
-    assert not os.path.exists(TEST_BUFFER_FILE)
+    # Verify the buffer was partially cleared from memory
+    assert len(sensor.buffer) == 150 # 250 - 100 = 150
+    assert sensor.buffer[0] == {"id": 100} # Check first remaining item
+    assert os.path.exists(TEST_BUFFER_FILE) # File should still exist
 
 
 # Tests error handling during resync - If a chunk fails, it should stop, not clear the buffer, and re-buffer.
@@ -124,22 +128,15 @@ def test_sensor_stops_chunking_on_failure(sensor, requests_mock, mocker):
     new_reading = {"id": 999}
     mocker.patch.object(sensor, "generate_reading", return_value=new_reading)
 
-    # Mock server: succeed on 1st, FAIL on 2nd
-    requests_mock.post(
-        TEST_URL,
-        [
-            {"status_code": 200, "json": {"status": "accepted"}},  # 1st chunk
-            {"status_code": 503},  # 2nd chunk
-        ],
-    )
+    # Mock server: fail on the first attempt
+    requests_mock.post(TEST_URL, status_code=503)
 
     sensor.is_connected = True
     sensor.run()  # Run one iteration
 
-    # Verify it tried to send two chunks, then stopped
-    assert requests_mock.call_count == 2
+    # Verify it tried to send one chunk, failed, and stopped
+    assert requests_mock.call_count == 1
     assert len(requests_mock.request_history[0].json()) == 100
-    assert len(requests_mock.request_history[1].json()) == 100
 
     # Verify it did not clear the buffer
     assert len(sensor.buffer) == 251  # Original 250 + the new reading
