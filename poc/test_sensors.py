@@ -39,6 +39,7 @@ def sensor(cleanup_buffer, mocker):
 
 # Test Cases
 
+
 # Tests if the sensor correctly loads pre-existing buffer file on init.
 def test_sensor_init_loads_buffer(cleanup_buffer):
     # Create a fake buffer file
@@ -89,7 +90,7 @@ def test_sensor_sends_buffer_in_chunks(sensor, requests_mock, mocker):
     # Create a fake buffer of 250 items
     fake_readings = [{"id": i} for i in range(250)]
     sensor.buffer = deque(fake_readings)
-    
+
     # Mock a new reading
     new_reading = {"id": 999}
     mocker.patch.object(sensor, "generate_reading", return_value=new_reading)
@@ -110,9 +111,9 @@ def test_sensor_sends_buffer_in_chunks(sensor, requests_mock, mocker):
     assert requests_mock.request_history[1].json() == [new_reading]
 
     # Verify the buffer was partially cleared from memory
-    assert len(sensor.buffer) == 150 # 250 - 100 = 150
-    assert sensor.buffer[0] == {"id": 100} # Check first remaining item
-    assert os.path.exists(TEST_BUFFER_FILE) # File should still exist
+    assert len(sensor.buffer) == 150  # 250 - 100 = 150
+    assert sensor.buffer[0] == {"id": 100}  # Check first remaining item
+    assert os.path.exists(TEST_BUFFER_FILE)  # File should still exist
 
 
 # Tests error handling during resync - If a chunk fails, it should stop, not clear the buffer, and re-buffer.
