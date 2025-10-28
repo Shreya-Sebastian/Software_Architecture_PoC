@@ -73,4 +73,5 @@ run-poc:
     - echo "Waiting 10s for RabbitMQ service to initialize..."
     - sleep 10
     - echo "Running the PoC phases test..."
+    - cd poc
     - python run_poc_test.py
