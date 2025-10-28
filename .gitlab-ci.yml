@@ -41,14 +41,12 @@ build-image:
     # Log in to the GitLab Container Registry
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USER" --password-stdin
     - echo "Building Docker image..."
     # Build the image using the Dockerfile
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA poc/
     - echo "Pushing Docker image to registry..."
     # Push the image so test jobs can use it
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-
 
 run-unit-tests:
   stage: test
