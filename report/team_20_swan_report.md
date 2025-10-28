@@ -116,48 +116,75 @@ Another ethical concern posed by smart homes is subtle and not as overt as the s
 
 The following quality attributes define the non-functional requirements of the Smarter Home system.
 
-**Privacy**: Recorded data is not immediately sensitive but should still be unavailable outside the system. Full transparency on what data is recorded.
+- **Privacy**: Recorded data is not immediately sensitive but should still be unavailable outside the system. Full transparency on what data is recorded.
 
-**Correctness**: The system recommends useful automations. An automation is useful when it operates devices in a way a user already does manually, or in a way a user would, given the choice.
+- **Correctness**: The system recommends useful automations. An automation is useful when it operates devices in a way a user already does manually, or in a way a user would, given the choice.
 
-**Usability**: One of the goals of the Smarter Home is to be as accessible as possible. To achieve this goal, user interfaces must be simple and intuitive. Recommendations must show what information they're based on, so that the system can be trusted by technical and non-technical people alike.
+- **Usability**: One of the goals of the Smarter Home is to be as accessible as possible. To achieve this goal, user interfaces must be simple and intuitive. Recommendations must show what information they're based on, so that the system can be trusted by technical and non-technical people alike.
 
-**Security**: Only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
+- **Security**: Only authenticated users and devices should be able to access the system to view its recorded data or operate its devices. This is a key concern for smart home systems in general because of two reasons: First, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Second, smart home systems are more vulnerable to cyberattacks due to their distributed, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target.
 
-**Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails.
+- **Availability**: The availability of any connected device must depend only on that device. This means that the failure of any device must not cause any other device to become inoperable.
 
-**Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
+- **Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
 
-**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients.
+- **Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients.
 
-### Privacy vs. Correctness
+#### Privacy vs. Correctness
 
 Privacy is a main concern with smart home systems, due to the large amounts of data IoT sensors collect inside users' homes. This data might not be immediately sensitive, but can present security concerns in aggregate. The routines can only be accurately identified based on accurate data, and privacy is therefore a direct tradeoff with the correctness of the system. By being completely transparent about the data collected, and allowing the user to inspect this data, they are empowered to make a more informed decision about the data they want recorded and or stored.
-
-### Security
-
-Security is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target.
 
 #### Security vs. Extensibility
 
 As every device connected to the system is an avenue for attack, constraints need to be placed on what devices may access the Smarter Home. This means that devices may enter the market that cannot be supported without compromising security. To make sure our goals regarding security and thereby privacy and availability are met we can only allow connections with devices that are considered secure.
 
-## System level architecture
+## Pricing model
 
-Now that the quality attributes are defined, we continue with a discussion of different types of architectures at the system level. We will select them with the quality attributes in mind.
+The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
+
+# 2. System Architecture
+
+>TODO INTRODUCE THIS SECTION
+
+## 2.1 Local vs. Cloud Responsibilities
+<!-- TODO link section requirements -->
+As detailed in the previous section, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view.
+
+### Options considered
+<!-- TODO Should this be a table?-->
+1. Local-only architecture
+    - All data and control remain inside the users' home.
+    - Pros: Privacy is best protected.
+    - Cons: Remote access is not straightforward; far less useable for non-technical users.
+2. Cloud-centric architecture
+    - Processing and storage happens in the cloud. 
+    - Pros: Remote access is more straightforward, centralized management, <!-- TODO reference cloud section? -->
+    - Cons: Sensitive data outside user control; offline operation impossible.
+3. Hybrid architecture
+    - Combines a local and a cloud component.
+    - Pros: Remote access can be achieved through the cloud component while sensitive data can remain local.
+    - Cons: Additional complexity; reliance on local hardware.
+
+### Y-statement
+> In the context of enabling remote smart-home control while preserving privacy and ensuring ease of use, facing the challenge that cloud services simplify remote connectivity for the user but inherently risk exposure of personal data, we decided to divide the system into a local component handling all sensitive data and a cloud component providing remote access, to achieve strong privacy, remote access and user-friendly operation, accepting increased system complexity and dependency on local hardware for critical functionality.
+
+## 2.2 Architectural styles
+
+Now that we have decided that our system will feature a cloud component and a local component we will discuss several architectural styles. We will focus on the attributes most relevant for the structural architecture of the system: security, availability, extensibility and scalability. The other qualities remain highly important but are addressed through design and implementation decisions rather than architectural structure.
 
 ### Monolithic Architecture
 
-In a monolithic architecture, the whole system is built as a single deployable unit. The logic runs in a single process and the application may be modularized by simply using features of the programming language, but in general, remains tightly coupled. Due to its simplicity, a monolithic architecture has the following advantages:
+In a monolithic architecture, the whole system is built as a single deployable unit. The logic runs in a single process and the application may be modularized by simply using features of the programming language, but in general, remains tightly coupled. Development for monolithic architectures is relatively simple. They are constructed with one codebase, making them easier to build. Testing the system as as whole is also easier, as the whole of the system could be run from a single instance. Deployment is also simplified as the system works with a single executable or directory. Data is processed inside a closed system, leaving few surfaces exposed to cyberattacks.
 
-1. **Simple development:** Monolithic architectures are constructed with one codebase, making them easier to build. Testing the system as as whole is also easier, as the whole of the system could be run from a single instance. Lastly, deployment is also simplified as the system works with a single executable or directory.
-2. **Security:** Data is processed inside a closed system, which makes it harder for cyberthreats to access it from the outside.
+However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures. Lastly, availability is limited, because the entire system becomes unavailable if the instance fails. (Powell & Smalley; Ponce et al. 2019).
 
-However, this simplicity also makes the architecture rigid, with comes with a large drawback: the system becomes resistant to change. Even though building the system was simpler, going back and making changes is more difficult. This is because the system is more tightly coupled, and changes at one point may affect larger parts of the system. On top of that, any change requires a complete redeployment. To make sure developers do not spend all of their time rebuilding, any decisions must be made more carefully and require longer-term commitment. In particular, scalability is a large challenge for monolithic architectures (Powell & Smalley)(Ponce et al. 2019).
+### Layered N-tier Architecture
+
+In an N-tier architecture the system is divided into horizontal layers. Each layer performs a specific role within the application. Most standard layered architectures consist of four layers: presentation, business, persistence, and database. However, larger applications may have more layers, and smaller applications may have less. The main advantage of this architecture is the decoupling of the layers. This makes it easier to develop and maintain due to the limited scope of components. Furthermore, testing is simplified because other layers can easily be mocked. Layers may be considered open or closed. An open layer allows a request to skip that particular layer, while a closed layer mandates that that request passes through itself. Opening layers reduces overhead, but too many open layers make for a tightly coupled system, negating the decoupling advantage. As the layers are generally not independently deployable, scalability and availability is similar to the monolithic architecture.  (Richards, 2015).
 
 ### Microkernel Architecture
 
-In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes require a complete redeployment (Thomas, 2025).
+In a microkernel architecture, the system consists of a core component which provides base functionality and plug-ins which provide extended functionality. Plug-ins are independent from each other, and connect only to the core through a plug-in interface. Additionally, plug-ins should only depend on the plug-in interface and the data returned through that interface. It is this loose coupling that makes plug-ins easier to modify and test than one part of a monolithic architecture would be. Adding new plug-ins is simple for the same reason. The plug-in interface is standardized, so that the core does not need to know anything about any plug-ins specific implementation. This isolation also enhances security and availability through clearer information boundaries and fault containment respectively. Microkernel architectures are deployed similarly to a monolith, which has the advantage that internal communication remains fast. However, similarly to monolithic architectures, changes to the core and plugins related to important functions require a complete redeployment. (Thomas, 2025).
 
 ### Microservice Architecture
 
@@ -165,25 +192,29 @@ In a microservice architecture, the system is split into "independently deployab
 
 However, when looking at the system as a whole, microservices do introduce complexity, mainly in the communication between services. There are increased security risks, because data is now processed over multiple services potentially opening up more avenues to attack (Powell & Smalley).
 
-### Conclusion
+### Trade-off analysis
 
-We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow extensibility, something very important to adapt to changing technology in the IoT device landscape. Another part of our system lives in the cloud, dealing with features such as remote access. For this part, we choose a microservices architecture. The cloud and microservices go hand in hand, as both are inherently distributed. This allows great scalability and availability. The monolithic approach was rejected as its rigidity is far less compatible with quality attributes like scalability and extensibility.
+Having discussed each architectural style, we continue with a summarizing trade-off analysis. The table below shows a comparison between the styles with regards to the chosen quality attributes.
 
-## Trade-off analysis
+| **Architecture** | **Security** |	**Availability** | **Extensibility** | **Scalability** |
+| ---------------- | ------------ | ---------------- | ----------------- | --------------- |
+| Monolithic       | High         |	Medium	         | Low               | Low             |
+| Layered N-tier   | High         |	Medium           | Medium            | Low             |
+| Microkernel      | High         |	High             | High              | Medium          |
+| Microservices    | Medium       |	High             | High              | High            |
 
-Each of the architectural styles have some pros and cons that are applicable to smart home systems. These are summarized in the table below. The microservices architecture was finally selected since it offers high maintainability, scalability and complexity.
-| **Architecture** | **Scalability** |	**Maintainability** |	**Data Integrity** |	**Responsiveness** |	**Privacy** |	**Complexity** | 
-| ---------------- | --------------- | -------------------- | ------------------ | ------------------- | ------------ | -------------- |
-| Monolithic |	Low |	Low	| High |	High |	High |	Low |
-| Microkernel |	Medium |	High |	High |	High |	Medium |	Medium |
-| Event-driven |	High |	Medium |	Medium |	Medium |	Low |	High |
-| Microservice |	High |	High |	Medium |	Medium |	Medium |	High |
+The monolithic and layered approaches provide simplicity and security, but their limited extensibility make them unsuitable for the evolving smart home market. We adopted the microkernel architecture for the part of our system that lives inside the home. There, on a central hub, it can be deployed as a single unit. The modularity of the plug-ins allow the extensibility to adapt to changing technology in the IoT device landscape. For the part of our system that lives in the cloud, we choose a microservices architecture, as it excels in availability, scalability, and extensibility which are essential for functional requirements like remote access and potential integration with external services. 
+In conclusion, we choose a hybrid approach: a microkernel architecture for the local hub, and a microservices architecture for the cloud component.
 
-The aim of the system is to offer robust, secure and smarter choices. The architectural styles offer these options in different branches. Here, since microservices is the style that is the closest to what is expected of our system. 
+### Y-statement
 
-## C4 Software Architecture Views
+> In the context of choosing an architectural style for our system that deals with sensitive data locally, must remain accessible at all times, and must be adaptable to the changing landscape of IoT devices, facing the challenge that architectures that emphasize security often are at odds with those emphasizing extensibility and scalability, we decided to adopt a microkernel architecture for the local hub and a microservices architecture for the cloud component, to achieve security, availability, extensibility and scalability, accepting increased system complexity and the need for careful security mitigations in the cloud.
 
-### Context Views
+## 2.3 C4 Software Architecture Views
+
+> TODO section introduction
+
+### 2.3.1 Context View
 
 The context view covers defines the relationship between Smarter home system and external parties or systems. It shows the interactions between users, devices and third-party platforms with the system when it operates.
 
@@ -195,7 +226,7 @@ The diagram identifies three external actors and one main system:
 4. Devices/Sensors - They are physical IoT devices that generate data and receive commands.
 5. Third-party Platforms - They are external agencies which connect through APIs.
 
-**Interactions**
+#### Interactions
 
 1. The user interacts with the system through app/UI.
 2. Devices send sensor data to Local Hubs.
@@ -204,57 +235,30 @@ The diagram identifies three external actors and one main system:
 
 ![Context View](images/context_view.png)
 
+### 2.3.2 Container view
 
-### Component View ###
-The component view shows the decomposition of the system's internal functionality into modules, services and other building blocks. Each component has a distinct responsibility and communicates via defined interfaces.
+In this section we show the different containers that make up the Smarter Home system. Previously we discussed that the system would consist of a cloud and a local component. Below is a diagram showing the different microservices of the cloud component, and the different plugins of the local hub.
 
-The Smarter home system can be divided into two main environments - Local Hub and Cloud Services.
-
-**Local Hub:** It is responsible for local processing and ensuring that automations work even offline.
-1. Core - It orchestrates communication between all local components.
-2. Device Communication - It interferes with sensors using standard protocols like Wi-Fi.
-3. Routine Detection - It analyzes incoming event streams to identify user behavior patterns.
-4. Automation Suggestion - It generates automations based on learned routines.
-5. User Management - It handles user authentication, role-based access and permissions.
-
-**Cloud Services:** It's responsible for data storage and analytics.
-1. API Gateway - It exposes REST APIs to the app, Local Hub and third-party systems.
-2. Authentication - It manages identity verification.
-3. Notifications - It sends user alerts about new automations, security events or system updates.
-
-**Shared Infrastructure:**
-1. Database - It's used for long-term storage of user profiles, device data, automation logs and learned models.
-2. Message Queue (RabbitMQ) - It decouples data ingestion and processing for scalability and fault tolerance.
-
-**Interactions**
-
-1. Local Hub components publish events to the Message Queue, consumed by Cloud services for aggregation.
-2. The Core communicates with API gateway for cloud synchronisation.
-3. The data and command traffic reach the database through API layer.
-
-![Component View](images/component_view.png)
-
-## Container view
-
-In this section we show the components of the Smart Home system. The diagram below shows the system is composed of two parts: One part on the cloud and one part on a local hub. The different boxes inside the cloud depict different microservices. Inside the local hub, the different boxes depict plug-ins. The cylinders depict databases. As per the microkernel architecture, plug-ins in the local hub only communicate with the core.
+Users operate their home through a mobile application. This application communicates directly with the local hub when they are on the same network, but interacts through a the cloud in cases of remote access. Additionally, the cloud is responsible for delivering updates and patches, pushing notifications to the user and providing identity for external ecosystems like via OAuth 2.0 account linking.
 
 ![Container View](images/container.png)
 
-Cloud building blocks:
+#### Cloud building blocks:
 
 | **Building block** | **Description** |
 | ------------------ | --------------- |
 | API gateway | Entry point for all requests to the cloud and can forward requests to the local hub (Richardson). |
-| Notifications | Responsible for notifying the user directly on their mobile device. |
-| Routine detection | Reads the sensor data inside the database and infers routines from them. |
-| Database | Cloud storage that holds user information for authentication and sensor data for routine detection. |
+| Remote Access service | Manages connections between the cloud and local hub. Authenticates these connections via the authentication service. |
+| Notification service | Responsible for notifying the user directly on their mobile device. |
+| System Management service | Responsible for delivering updates and patches to the local hub. |
+| Authentication service | Manages credentials for users, hubs and third-party integrations. | 
+| Databases | The authentication, system management, and notification services each have their own database, ensuring data ownership and minimizing coupling. |
 
-Local hub building blocks:
+#### Local hub building blocks:
 
 | **Building block** | **Description** |
 | ------------------ | --------------- |
-| Core | Core of the microkernel architecture of the local hub. Calls other plug-ins when needed. |
-| Cloud synchronization | Responsible for offloading sensor data to the cloud database. |
+| Core | Core of the microkernel architecture of the local hub. Coordinates communication between plug-ins through a standardized interface that each plug-in must implement. |
 | Automation | Runs configured automations. |
 | Device communication | Responsible for building and interpreting requests to and from smart home devices. |
 | Authentication | Makes sure only authenticated users can interact with the Smarter Home. |
@@ -263,9 +267,41 @@ Local hub building blocks:
 | Network Module | Entry point for all requests to the local hub. |
 | Database | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage. |
 
-Besides detecting routines, the cloud acts as an intermediary between remote users and the local hub, allowing users to interact with their devices from outside their home. Similarly, the local hub may notify the users via the cloud. Users may also interact with their local hub directly if they are on the same local network. 
+### 2.3.3 Component View
 
-### Class View ###
+The component view shows the decomposition of the system's internal functionality into modules, services and other building blocks. Each component has a distinct responsibility and communicates via defined interfaces.
+
+The Smarter home system can be divided into two main environments - Local Hub and Cloud Services.
+
+#### Local Hub
+Responsible for local processing and ensuring that automations work even offline.
+1. Core - It orchestrates communication between all local components.
+2. Device Communication - It interferes with sensors using standard protocols like Wi-Fi.
+3. Routine Detection - It analyzes incoming event streams to identify user behavior patterns.
+4. Automation Suggestion - It generates automations based on learned routines.
+5. User Management - It handles user authentication, role-based access and permissions.
+
+#### Cloud Services
+Responsible for data storage and analytics.
+1. API Gateway - It exposes REST APIs to the app, Local Hub and third-party systems.
+2. Authentication - It manages identity verification.
+3. Notifications - It sends user alerts about new automations, security events or system updates.
+
+#### Shared Infrastructure
+1. Database - It's used for long-term storage of user profiles, device data, automation logs and learned models.
+2. Message Queue (RabbitMQ) - It decouples data ingestion and processing for scalability and fault tolerance.
+
+#### Interactions
+
+1. Local Hub components publish events to the Message Queue, consumed by Cloud services for aggregation.
+2. The Core communicates with API gateway for cloud synchronisation.
+3. The data and command traffic reach the database through API layer.
+
+![Component View](images/component_view.png)
+
+
+
+### 2.3.4 Class View 
 
 The Class view depicts the internal code structure. It focuses on logical organization rather than runtime behaviour. This view is focused on the entirety of the Smarter home system and isn't limted to the PoC of the assignment which focuses on particular functionalities.
 
@@ -276,7 +312,7 @@ The Class view depicts the internal code structure. It focuses on logical organi
 5. RoutineDetector - Processes events to learn user behaviour patterns and generate automation triggers.
 6. Repository - Handles persistence like saving, querying and loading data.
 
-**Relationships**
+#### Relationships
 
 1. User -> Device: Users control and manage devices.
 2. Device -> Event: Devices generate events logged by system.
@@ -285,7 +321,7 @@ The Class view depicts the internal code structure. It focuses on logical organi
 
 ![Class View](images/class_view.png)
 
-## Runtime view
+## 2.4 Runtime view
 
 In this section we discuss a runtime view illustrating how the cloud and local hub work together to connect the user to their home. The diagram below shows the interactions between the local hub,the cloud and their plug-ins and microservices, when the user wants to update a device. For example, updating a device could mean turning a light on or off.
 
@@ -293,11 +329,7 @@ In this section we discuss a runtime view illustrating how the cloud and local h
 
 In this diagram, the cloud connects the user to the local hub, allowing the user to make requests remotely. The request is forwarded to the network module on the local hub. The network module passes this request to the core of the hub, as no plug-ins interact with each other. To interact with the device the hub needs to build a request adhering to the protocol used by the device. To do this, the core uses the device communication plug-in to build the appropriate request. This request is passed to the network module which sends it to the device. The device then returns a message to the hub, which is passed through the network module to the core. The core then uses the device communication plug-in again to parse the response, and can then update the database.
 
-## Pricing model
-
-The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
-
-## Selecting Open Source Components
+## 2.5 Selecting Open Source Components
 
 The Smarter Home system can and should benefit greatly from existing open-source technologies, which offer a solid foundation for building the reliable and flexible smart home solutions. Open-source tools have multiple advantages such as being well-tested, widely supported and that they are freely available. This is making them an ideal choice for a project as ours that values transparency and adaptability. By combining different open-source components, the system can cover everything from the data collection and storage to the automations and user interaction without reinventing the wheel again.
 
@@ -318,7 +350,7 @@ The security and the privacy are central to any smart home system. Open source t
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
 
-## Cloud vs on Premises Development 
+## 2.6 Cloud vs on Premises Development 
 
 There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware. 
 
@@ -327,7 +359,7 @@ For a public cloud model, the problem of scalability is solved as it makes use o
 A Hybrid approach would be ideal as real-time tasks can be handeled locally and less sensitive/heavier computation can be handeled on the cloud. In this manner, high sovereignty and user privacy can be maintained while still benefitting from public cloud services.
 
 
-## Proof of Concept
+# 3 Proof of Concept
 
 The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture. 
 
@@ -435,3 +467,5 @@ Finally, the test concludes by checking that the disconnected sensor's local buf
 - Richardson, C. _Microservices pattern: Pattern: API gateway / backends for frontends_. microservices.io. [Link](https://microservices.io/patterns/apigateway.html)
 
 - Thomas, R. _Microkernel Architecture_. Brisbane; University of Queensland, 2025 [PDF](https://csse6400.uqcloud.net/handouts/microkernel.pdf)
+
+- Richards, M. _Software architecture patterns: Understanding Common Architecture Patterns and when to Use Them_. O'Reilly Media, Inc. 2015
