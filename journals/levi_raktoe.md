@@ -29,3 +29,7 @@ We had a meeting to discuss plans for the POC. We decided that the POC would add
 ### Week 6
 
 This was a hectic week because of other responsibilities. With the Heron deadline coming up I read up on monolithic, microkernel and microservice architectures. Based on that, I wrote the part of the report deciding which architectures would be used. I also made a component and runtime view diagram.
+
+### Week 7
+
+I spend time reading the
