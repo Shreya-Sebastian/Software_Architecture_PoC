@@ -15,7 +15,7 @@ class Sensor:
     - Generates data periodically.
     - Tries to send data (and any existing backlog) to the server.
     - If sending fails, it buffers data to a local file.
-    - Upon reconnection, it sends the buffered data.
+    - Upon reconnection, it sends the buffered data one chunk at a time.
     """
 
     def __init__(self, sensor_id: str, server_url: str, data_type: str = "temperature"):
@@ -26,7 +26,7 @@ class Sensor:
         self.buffer = self._load_buffer()
         self.is_connected = True  # Controlled externally by the test script
         self._stop_event = threading.Event()
-        self.CHUNK_SIZE = 100
+        self.CHUNK_SIZE = 25
 
     def _load_buffer(self) -> deque:
         # Loads pending data from the buffer file on startup
@@ -45,10 +45,18 @@ class Sensor:
         with open(self.buffer_file, "a") as f:
             f.write(json.dumps(reading) + "\n")
 
-    def _clear_buffer_file(self):
-        # Clears the buffer file after successful transmission
-        if os.path.exists(self.buffer_file):
-            os.remove(self.buffer_file)
+    def _persist_buffer(self):
+        # Rewrites the buffer file from the in-memory deque.
+        if not self.buffer:
+            # If deque is empty, just remove the file
+            if os.path.exists(self.buffer_file):
+                os.remove(self.buffer_file)
+            return
+
+        # Rewrite the file with the remaining buffer contents
+        with open(self.buffer_file, "w") as f:
+            for reading in self.buffer:
+                f.write(json.dumps(reading) + "\n")
 
     def generate_reading(self) -> dict:
         # Generates a new sensor reading
@@ -88,59 +96,56 @@ class Sensor:
         while not self._stop_event.is_set():
             # Generate new data
             current_reading = self.generate_reading()
-            send_current_reading_now = True  # Flag to control sending the new reading
+            # Flag
+            buffer_current_reading = False
 
             if self.is_connected:
-                # When connected, try to send buffer first (resynchronize)
+                # When connected try to send one chunk from buffer first
                 if self.buffer:
                     print(
-                        f"[{self.sensor_id}] INFO: Connection restored. Attempting to send {len(self.buffer)} buffered readings in chunks..."
+                        f"[{self.sensor_id}] INFO: Connection OK. Attempting to send 1 chunk of {min(len(self.buffer), self.CHUNK_SIZE)}/{len(self.buffer)} readings..."
                     )
 
-                    all_chunks_sent = True
-                    # Work on a temporary copy
-                    temp_buffer = list(self.buffer)
+                    # Create chunk from the front of the deque (don't remove yet)
+                    chunk = [
+                        self.buffer[i]
+                        for i in range(min(len(self.buffer), self.CHUNK_SIZE))
+                    ]
 
-                    while temp_buffer:
-                        # Create a chunk from the temp buffer
-                        chunk = temp_buffer[: self.CHUNK_SIZE]
-
-                        if self._send_data(chunk):
-                            print(
-                                f"[{self.sensor_id}] INFO: Sent chunk of {len(chunk)}. {len(temp_buffer)-len(chunk)} remaining in queue."
-                            )
-                            # Send the temp buffer only on success
-                            del temp_buffer[: self.CHUNK_SIZE]
-                        else:
-                            print(
-                                f"[{self.sensor_id}] WARNING: Failed to send chunk. Aborting buffer send."
-                            )
-                            all_chunks_sent = False
-                            self.is_connected = False
-                            break  # Stop trying to send chunks
-
-                    if all_chunks_sent:
+                    if self._send_data(chunk):
+                        # Remove sent items from in-memory buffer
+                        for _ in range(len(chunk)):
+                            self.buffer.popleft()
                         print(
-                            f"[{self.sensor_id}] INFO: Buffer successfully sent and cleared."
+                            f"[{self.sensor_id}] INFO: Chunk sent. {len(self.buffer)} readings remain."
                         )
-                        self.buffer.clear()  # Clear in-memory
-                        self._clear_buffer_file()  # Clear on-disk
+                        # Persist this change to the file
+                        self._persist_buffer()
                     else:
-                        # A chunk failed, don't send the current reading.
-                        send_current_reading_now = False
+                        # Stop trying for this loop
+                        print(
+                            f"[{self.sensor_id}] WARNING: Failed to send chunk. Aborting."
+                        )
+                        self.is_connected = False
+                        # Buffer the current_reading
+                        buffer_current_reading = True
 
-                # If connected and buffer sending was succesful
-                if send_current_reading_now and self.is_connected:
-                    # Send current data or give warning if sending fails
+                # If still connected (buffer was empty or chunk send was OK)
+                if self.is_connected:
+                    # try to send the current reading.
                     if not self._send_data([current_reading]):
                         print(
                             f"[{self.sensor_id}] WARNING: Connection lost. Buffering new reading."
                         )
                         self.is_connected = False
+                        buffer_current_reading = True
 
-            # If not connected
-            if not self.is_connected:
-                # Buffer the current reading.
+            else:  # Was not connected from the start
+                print(f"[{self.sensor_id}] OFFLINE: Buffering reading.")
+                buffer_current_reading = True
+
+            # Final buffering check
+            if buffer_current_reading:
                 print(f"[{self.sensor_id}] OFFLINE: Buffering reading.")
                 self._save_to_buffer(current_reading)
 

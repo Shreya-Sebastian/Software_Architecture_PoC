@@ -1,44 +1,37 @@
 version: '3.8'
 
 services:
-  # RabbitMQ Message Queue
+
+  # RabbitMQ message broker
   rabbitmq:
-    image: rabbitmq:3-management
-    hostname: rabbitmq
+    image: "rabbitmq:3-management" 
+    hostname: "rabbitmq"           
     ports:
-      # Port for the app to connect
-      - "5672:5672"
-      # # Port for the Management UI 
-      # - "15672:15672"
+      - "5672:5672"   
+      - "15672:15672" 
     healthcheck:
-      # Checks if RabbitMQ is ready before starting other services
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   # FastAPI Ingestion Server
-  server:
-    # Build the image from the Dockerfile in the current directory
-    build: .
+  ingestion-server:
+    build: .  
     ports:
-      # Map host port 8000 to container port 8000
-      - "8000:8000"
+      - "8000:8000" # Map host port 8000 to container port 8000
     environment:
-      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_HOST=rabbitmq 
     depends_on:
       rabbitmq:
-        # Wait for RabbitMQ's healthcheck to pass
-        condition: service_healthy
+        condition: service_healthy # Wait for RabbitMQ to be healthy before starting
 
-  # Python Consumer
+  # Consumer
   consumer:
-    # Use the same image built for the server
-    build: .
-    # Override the default CMD from the Dockerfile
-    command: python consumer.py
+    build: . 
+    command: "python consumer.py" 
     environment:
-      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_HOST=rabbitmq '
     depends_on:
       rabbitmq:
-        condition: service_healthy
+        condition: service_healthy 
