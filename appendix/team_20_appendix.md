@@ -20,3 +20,7 @@ The following requirements are essential to the Smarter Home:
    - Automations are suggested based on this recorded data.
    - Suggested automations show the users on which data they are based
    - Users may alter the suggested automation before accepting it.
+- Remote access:
+   - Users can perform any action remotely.
+- Third party integration:
+   - The system can integrated with third party services like Alexa, Siri, IFTTT, 
