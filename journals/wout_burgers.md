@@ -29,3 +29,7 @@ The week started somewhat slow which frustrated me a bit, it took quite some tim
 # Week 7
 
 As a feedback, we got that we did not use the gitlab reviews as much as we should, so I started off the week reviewing some of the work of the other group members. Which I spent roughly an hour on. We finished up our report and handed it in which I spent some more hours on. During the week I reviewed a different report which I spent about 3 hours on. It was a bit more than I expected. After the review of our own report, I started looking into creating a pipeline for the poc but did not get the chance yet to implement it, which is the plan for next week. To finish off the week I took some time to go over the feedback we received.
+
+# Week 8
+
+At the start of the week, we got the feedback from both the TA and the peer reviews. I took some time to go over all the feedback (1 hour) and then started to work on implementing the feedback (3 hours). On wednesday we had a meeting with the TA, from which we asked a few last questions about the report and the process. After the meeting we made a plan to finish the report and start working on the presentation. I also took some more time to look into the pipeline and review merge requests. There are still some issues with the pipeline which we have to look into. Also we started thinking and planning for the presentation of week 9.
