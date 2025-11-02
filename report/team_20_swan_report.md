@@ -422,7 +422,7 @@ To solve the key problems mentioned, the PoC employs several architectural decis
   The architecture allows for running multiple instances of the consumer process. Each consumer can work on messages from the same queue in parallel, allowing the data processing capacity to be scaled up or down simply by adding or removing consumer instances.
 
 - **Buffer Chunking During Resnychronization**  
-  When a sensor reconnects after being offline, it avoids sending its entire data backlog at once by using message chunking. This strategy is assists with scalability since it prevents a single sensor from overwhelming the ingestion server, avoiding resource exhaustion and request timeouts. Furthermore, if a single chunk fails to send, the sensor only needs to retry the remaining messages in the buffer instead of the full buffer, optimizing the resynchronization process.
+  When a sensor reconnects after being offline, it avoids sending its entire data backlog at once by using message chunking. This strategy facilitates scalability since it prevents a single sensor from overwhelming the ingestion server. Furthermore, if a single chunk fails to send, the sensor only needs to retry the remaining messages in the buffer instead of the full buffer, optimizing the resynchronization process.
 
 ### 11.3 Evaluation
 

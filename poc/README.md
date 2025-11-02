@@ -56,8 +56,9 @@ The PoC includes unit tests for the sensor logic (`test_sensors.py`).
 These tests run in isolation and do not require a live RabbitMQ server.
 
 1.  **Run the tests:**
-    From within the poc folder, run `python -m pytest -v`.
+    From within the poc folder, run `python -m pytest -v` to run the unit tests testing error handling and scalability.
 
     ```shell
-    python -m pytest -v
+    python -m pytest -v error_handling_tests.py
+    python -m pytest -v scalability_tests.py
     ```
