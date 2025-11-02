@@ -48,14 +48,35 @@ build-image:
     # Push the image so test jobs can use it
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
-run-unit-tests:
+run-error_handling-tests:
   stage: test
   # Use the image built in the 'build-image' job
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script: [] 
   script:
     - echo "Running unit tests inside the Docker container..."
-    - python -m pytest -v
+    - python -m pytest -v test_sensors.py
+
+run-scalability-tests:
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  services:
+    # This job also needs RabbitMQ
+    - name: rabbitmq:3-management
+      alias: rabbitmq
+  variables:
+    RABBITMQ_HOST: rabbitmq
+  before_script:
+    - echo "Waiting 10s for RabbitMQ service..."
+    - sleep 10
+    - echo "Starting background services for scalability test..."
+    - python consumer.py &
+    - uvicorn ingestion_server:app --host 0.0.0.0 --port 8000 &
+    - echo "Waiting 10s for server and consumer to be ready..."
+    - sleep 10
+  script:
+    - echo "Running scalability tests..."
+    - python -m pytest -v test_scalability.py
 
 run-poc:
   stage: test
