@@ -62,7 +62,6 @@ run-error_handling-tests:
   script:
     - echo "Running unit tests inside the Docker container..."
     - cd poc
-    - cd tests
     - python -m pytest -v error_handling_tests.py
 
 run-scalability-tests:
@@ -85,8 +84,7 @@ run-scalability-tests:
   script:
     - echo "Running scalability tests..."
     - cd poc
-    - cd tests
-    - python -m pytest -v test_scalability.py
+    - python -m pytest -v scalability_tests.py
 
 run-poc:
   stage: test
