@@ -38,6 +38,12 @@ build-image:
     # Use TLS for the DinD service
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
+    - echo "Waiting for Docker daemon to be ready..."
+    - while ! docker info > /dev/null 2>&1; do
+    -   echo -n "."
+    -   sleep 1
+    - done
+    - echo "Docker daemon is ready."
     # Log in to the GitLab Container Registry
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:

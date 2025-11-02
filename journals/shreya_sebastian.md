@@ -30,4 +30,5 @@ I polished the PoC a bit and created a readme file (2 hours). In the report, I d
 
 ## Week 7
 I updated the context analysis section to be in line with the feedback we got earlier and added a context diagram (2 hours). I also reworked the ethical implications section to be a bit less redundant and made other small edits (1 hour). 
+For the PoC, I added
 
