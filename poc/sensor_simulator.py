@@ -77,7 +77,7 @@ class Sensor:
                 headers={"Content-Type": "application/json"},
                 timeout=2.0,
             )
-            response.raise_for_status()  # This will raise an HTTPError for 4xx/5xx responses
+            response.raise_for_status()
             print(
                 f"[{self.sensor_id}] INFO: Successfully sent {len(readings)} readings. Server says: {response.json()['status']}"
             )
