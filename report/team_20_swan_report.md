@@ -161,7 +161,12 @@ The Smarter Home allows a greater part of the population to make use of all the 
 
 <!-- TODO link section requirements -->
 
-As detailed in the previous section, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view.
+As detailed in the previous section, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view. Before considering the options of what architecural decision to make, it is essential to look at the responsibilities that the cloud or local hub would have in their locations.
+
+| **Location**   | **Responsibilities**                                                                   |
+| -------------- | -------------------------------------------------------------------------------------- |
+| Local Hub      | Data collection, storage, routine learning, automation execution, device communication |
+| Cloud Services | Remote access, authentication, update delivery, notification, multi-home scalability   |
 
 #### 8.1.1 Options considered
 
@@ -226,11 +231,30 @@ In conclusion, we choose a hybrid approach: a microkernel architecture for the l
 
 > In the context of choosing an architectural style for our system that deals with sensitive data locally, must remain accessible at all times, and must be adaptable to the changing landscape of IoT devices, facing the challenge that architectures that emphasize security often are at odds with those emphasizing extensibility and scalability, we decided to adopt a microkernel architecture for the local hub and a microservices architecture for the cloud component, to achieve security, availability, extensibility and scalability, accepting increased system complexity and the need for careful security mitigations in the cloud.
 
-### 8.3 C4 Software Architecture Views
+### 8.3 Architectural decision - Telemetry Ingestion Protocol
+
+For reliable, resilient and scalable ingestion of sensor data with local buffering (store-and-forward), a stateless HTTP ingestion service and RabbitMQ for decoupling can be used. The choice of transport protocol  materially affects reliability intermittent connectivity, observability and operational complexity.
+
+#### 8.3.1 Alternatives considered
+
+1. REST
+   -Strengths: Firewall friendly, simple request/response with explicit chunked backlog upload, easy validation at edge & gateway, straightforward backoff, clear audit trails
+   -Weakness: Higher per-message overhead than MQTT, client-driven polling, not a PUSH protocol
+2. MQTT
+   -Strengths: Designed for IoT, persistent sessions, low bandwidth and battery overhead
+   -Weakness: Requires broker at edge or cloud, more operational moving parts, message ordering nuances at scale
+3. Websockets
+   -Strengths: low-latency, server push, efficient for streaming, full-duplex
+   -Weaness: backpressure & reconnection logic needed, harder to batch
+4. UDP 
+   -Strengths: lightweight, suitable for constrained networks
+   -Weakness: UDP traveral, observability harder
+
+### 8.4 C4 Software Architecture Views
 
 > TODO section introduction
 
-#### 8.3.1 Context View
+#### 8.4.1 Context View
 
 The context view covers defines the relationship between Smarter home system and external parties or systems. It shows the interactions between users, devices and third-party platforms with the system when it operates.
 
@@ -251,7 +275,7 @@ The diagram identifies three external actors and one main system:
 
 ![Context View](images/context_view.png)
 
-### 8.3.2 Container view
+### 8.4.2 Container view
 
 In this section we show the different containers that make up the Smarter Home system. Previously we discussed that the system would consist of a cloud and a local component. Below is a diagram showing the different microservices of the cloud component, and the different plugins of the local hub.
 
@@ -283,7 +307,7 @@ Users operate their home through a mobile application. This application communic
 | Network Module        | Entry point for all requests to the local hub.                                                                                                                       |
 | Database              | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage.                   |
 
-### 8.3.3 Component View
+### 8.4.3 Component View
 
 The component view shows the decomposition of the system's internal functionality into modules, services and other building blocks. Each component has a distinct responsibility and communicates via defined interfaces.
 
@@ -320,7 +344,7 @@ Responsible for data storage and analytics.
 
 ![Component View](images/component_view.png)
 
-### 8.3.4 Class View
+### 8.4.4 Class View
 
 The Class view depicts the internal code structure. It focuses on logical organization rather than runtime behaviour. This view is focused on the entirety of the Smarter home system and isn't limted to the PoC of the assignment which focuses on particular functionalities.
 
@@ -340,7 +364,7 @@ The Class view depicts the internal code structure. It focuses on logical organi
 
 ![Class View](images/class_view.png)
 
-### 8.3.5 Runtime view
+### 8.4.5 Runtime view
 
 In this section we discuss a runtime view illustrating how the cloud and local hub work together to connect the user to their home. The diagram below shows the interactions between the local hub,the cloud and their plug-ins and microservices, when the user wants to update a device. For example, updating a device could mean turning a light on or off.
 
@@ -375,6 +399,12 @@ There are several potential options for deployment models all with their own tra
 For a public cloud model, the problem of scalability is solved as it makes use of a provider that is wholy dedicated to scaling. The problems of sovereignty and user privacy still persist as this model forces all sensitive user data to reside on third-party servers.
 
 A Hybrid approach would be ideal as real-time tasks can be handeled locally and less sensitive/heavier computation can be handeled on the cloud. In this manner, high sovereignty and user privacy can be maintained while still benefitting from public cloud services.
+
+| **Deployment model**   | **Advantages**                                                         | **Disadvantages**                             |
+| ---------------------- | ---------------------------------------------------------------------- | --------------------------------------------- |
+| On Premises            | Is less dependent on internet, maximum sovereignty                     | No remote access, difficult to update         |
+| Public Cloud           | Supports remote access, easy to scale, can provide centralised updates | Privacy risk                                  |
+| Hybrid                 | local autonomy, supports remote access, updates                        | Requires coordination between cloud and local |
 
 ## 11 Proof of Concept
 
