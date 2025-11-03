@@ -366,6 +366,21 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
+The open source components are summarized in the table below:
+
+
+| Component | Open Source Tool | Why |
+| :--- | :--- | :--- |
+| Backend | FastAPI | High performance API handling |
+| Message Broker | RabbitMQ | Supports scaling, avoids data loss |
+| Database | PostgreSQL, TimescaleDB | Supports time series, structured relational DB |
+| Data validation | Pydantic | Validates sensor data before entering pipeline |
+| Analytics | Numpy, Pandas, scikit-learn | Transparent, interpretable routine detection |
+| Device Integration | Home Assistant | Easy extensibility |
+| Frontend | React | Easier to build UI |
+| Security | Keycloak | Secure Identity |
+| Deployment | Docker | Portable, modular microservice deployment |
+
 ## 10 Cloud vs on Premises Development
 
 There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. This model aligns perfectly with the system's core privacy quality attribute and the ethical mitigations discussed, as sensitive data never leaves the user's home. It also ensures high availability for core automation tasks, as they would be unaffected by internet outages. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware.
