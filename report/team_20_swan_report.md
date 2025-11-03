@@ -289,25 +289,49 @@ In the figure below we see the microservices in more detail.
 ![Component view of the local hub](images/hub_component.png)
 
 
-### 2.3.4 Class View 
+### 2.3.4 Code View 
 
-The Class view depicts the internal code structure. It focuses on logical organization rather than runtime behaviour. This view is focused on the entirety of the Smarter home system and isn't limted to the PoC of the assignment which focuses on particular functionalities.
+The code view shows the structure of code at the lowest level. We will use it to take a look at the a component that will specifically address the quality goals of availability and scalability. The main component concerned with these goals is Network Module in the local hub. In this section we outline the architectural decisions made to address two fundamental challenges in IoT systems:
 
-1. User - It represents the system user. Includes authentication, roles, permissions.
-2. Device - It models a virtual IoT device with state and control methods.
-3. Event - It represents data captured from devices.
-4. AutomationSuggestion - It is used to automatically generate suggestions based on detected routines.
-5. RoutineDetector - Processes events to learn user behaviour patterns and generate automation triggers.
-6. Repository - Handles persistence like saving, querying and loading data.
+1. **Data Loss During Network Outages**  
+   In a typical IoT setup, sensors send data to a central server over a network (like Wi-Fi or cellular). If this network connection is lost, a sensor would fail to send its readings, resulting in permanent data loss.
 
-#### Relationships
+2. **Lack of Modularity**  
+   A simple architecture might have sensors sending data directly to a service that also processes it immediately. This tight coupling means that if the processing service is slow, under heavy load, or temporarily down, the entire ingestion process halts, and sensors can no longer send their data.
 
-1. User -> Device: Users control and manage devices.
-2. Device -> Event: Devices generate events logged by system.
-3. Event -> RoutineDetector: Event data feeds into pattern-learning algorithm.
-4. RoutineDetector -> AutomationSuggestion: Detected routines lead to automation suggestions.
+To solve these challenges, we have made the following architectural decisions:
 
-![Class View](images/class_view.png)
+#### 1. Addressing Error Handling
+
+- **Store and Forward Mechanism**  
+  Sensors are designed to buffer data to a local file if they cannot connect to the ingestion server. This prevents data loss during network outages by storing it locally and forwarding it once the connection is re-established.
+
+- **Durable Message Queue**  
+  The ingestion server is decoupled from the consumer using a message queue. The queue is configured to be durable, meaning that even if the message broker restarts, the queue and its messages persist, preventing data loss at the broker level.
+
+- **Consumer Acknowledgments**  
+  The consumer sends an explicit acknowledgment to the message broker only after it has successfully processed a message. If the consumer crashes before sending this acknowledgment, the broker re-queues the message to be processed again, ensuring no data is lost during consumer failures.
+
+- **Data Validation at Entry**  
+  The ingestion server validates the structure and data types of all incoming data. This acts as a gateway, preventing corrupted or malformed data from ever entering the message queue and the rest of the processing pipeline.
+
+#### 2. Addressing Scalability
+
+- **Decoupled Architecture**  
+  The message queue is the central element that allows components to scale independently. The ingestion server can handle a high volume of incoming sensor data without being slowed down by the consumer's processing speed. The queue absorbs traffic bursts, allowing the system to handle load gracefully.
+  
+- **Lightweight Ingestion Server**  
+  The ingestion server's role is minimal: accept, validate, and forward. By offloading processing to the consumers, the server remains lightweight and can handle a high number of concurrent HTTP connections, making the data ingestion point highly scalable.
+
+- **Horizontal Consumer Scaling**  
+  The architecture allows for running multiple instances of the consumer process. Each consumer can work on messages from the same queue in parallel, allowing the data processing capacity to be scaled up or down simply by adding or removing consumer instances.
+
+- **Buffer Chunking During Resynchronization**  
+  When a sensor reconnects after being offline, it avoids sending its entire data backlog at once by using message chunking. This strategy facilitates scalability since it prevents a single sensor from overwhelming the ingestion server. Furthermore, if a single chunk fails to send, the sensor only needs to retry the remaining messages in the buffer instead of the full buffer, optimizing the resynchronization process.
+
+The diagram below shows a view of the Request Listening component of the Network Module plugin.
+
+![Request listening](images/PoC_Architecture.png)
 
 ## 2.4 Runtime view
 
@@ -337,7 +361,6 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
-
 ## 2.6 Cloud vs on Premises Development 
 
 There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware. 
@@ -349,61 +372,15 @@ A Hybrid approach would be ideal as real-time tasks can be handeled locally and 
 
 # 3 Proof of Concept
 
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture. 
+The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It implements the architectural decisions described in Section 2.3.4 <!-- TODO link? -->It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. 
 
-
-### Problems Addressed
-
-The PoC directly addresses two fundamental challenges in IoT systems:
-
-1. **Data Loss During Network Outages**  
-   In a typical IoT setup, sensors send data to a central server over a network (like Wi-Fi or cellular). If this network connection is lost, a sensor would fail to send its readings, resulting in permanent data loss.
-
-2. **Lack of Modularity**  
-   A simple architecture might have sensors sending data directly to a service that also processes it immediately. This tight coupling means that if the processing service is slow, under heavy load, or temporarily down, the entire ingestion process halts, and sensors can no longer send their data.
-
-
-### Architectural Solution
-
-
-The PoC architecture is as follows:
-
-![PoC architecture](images/PoC_Architecture.png)
-
-
-To solve the key problems mentioned, the PoC employs several architectural decisions:
-
-#### 1. Tackling the problem of Data Integrity
-
-- **Store and Forward Mechanism**  
-  Sensors are designed to buffer data to a local file if they cannot connect to the ingestion server. This prevents data loss during network outages by storing it locally and forwarding it once the connection is re-established.
+### Implementation specifics
 
 - **Durable Message Queue**  
-  The use of RabbitMQ as a message broker decouples the ingestion server from the consumer. The queue is configured to be durable, meaning that even if the message broker restarts, the queue and its messages persist, preventing data loss at the broker level.
-
-- **Persistent Messages**  
-  Messages are published to the queue with a persistent delivery mode. This ensures that messages written to the queue are saved to disk and will survive a broker restart.
-
-- **Consumer Acknowledgments**  
-  The consumer sends an explicit acknowledgment to the message broker only after it has successfully processed a message. If the consumer crashes before sending this acknowledgment, the broker re-queues the message to be processed again, ensuring no data is lost during consumer failures.
+  We use RabbitMQ to implement the message que that decouples the ingestion server from the consumer.
 
 - **Data Validation at Entry**  
-  The ingestion server uses **Pydantic models** to validate the structure and data types of all incoming data. This acts as a gateway, preventing corrupted or malformed data from ever entering the message queue and the rest of the processing pipeline.
-
-#### 2. Addressing Scalability
-
-- **Decoupled Architecture**  
-  The message queue is the central element that allows components to scale independently. The ingestion server can handle a high volume of incoming sensor data without being slowed down by the consumer's processing speed. The queue absorbs traffic bursts, allowing the system to handle load gracefully.
-
-- **Horizontal Consumer Scaling**  
-  The architecture allows for running multiple instances of the consumer process. Each consumer can work on messages from the same queue in parallel, allowing the data processing capacity to be scaled up or down simply by adding or removing consumer instances.
-
-- **Balanced Load Distribution**  
-  The consumer is configured with a `prefetch_count` of 1. When multiple consumers are running, this setting ensures that each consumer is only working on one message at a time, preventing a single fast consumer from hoarding all the messages and allowing for an even distribution of work.
-
-- **Lightweight Ingestion Server**  
-  The ingestion server's role is minimal: accept, validate, and forward. By offloading processing to the consumers, the server remains lightweight and can handle a high number of concurrent HTTP connections, making the data ingestion point highly scalable.
-
+  The ingestion server uses **Pydantic models** to validate the structure and data types of all incoming data.
 
 ### Evaluation
 
