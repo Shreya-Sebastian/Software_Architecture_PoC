@@ -14,3 +14,19 @@ We presented the problem analysis to another team as they presented to us. We go
 ## Week 4
 
 We decided on the direction of our PoC direction.
+
+## Week 5
+We recieved feedback from the TA on how to proceed with the PoC direction.
+
+## Week 6
+I worked on the architectural views and looked into alternatives.
+
+## Week 7
+I worked on cloud vs on premises and further improved on architectural views.
+
+## Week 8
+I looked at the poc section to run and identify bugs but wasn't able to make any changes.
+We presented our problem idea and solution in class.
+
+## Week 9
+We went over our report to make last minute changes and add any additional information.
