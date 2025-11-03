@@ -33,3 +33,7 @@ As a feedback, we got that we did not use the gitlab reviews as much as we shoul
 # Week 8
 
 At the start of the week, we got the feedback from both the TA and the peer reviews. I took some time to go over all the feedback (1 hour) and then started to work on implementing the feedback (3 hours). On wednesday we had a meeting with the TA, from which we asked a few last questions about the report and the process. After the meeting we made a plan to finish the report and start working on the presentation. I also took some more time to look into the pipeline and review merge requests. There are still some issues with the pipeline which we have to look into. Also we started thinking and planning for the presentation of week 9.
+
+# Week 9
+
+I started off the week by doing some more work on the report and fixing the numbering of the chapters. I also added a few more sections and spent several hours in total on this. Tuesday we had a meeting together with the group to divide and plan the presenation. Later that day I worked on the presentation, in total this was 3.5 hours including the meeting. The day after we had our final presentation and we made a plan for the remaining few days. I worked on a last few bits of the report while we discussed what still to improve and finish.
