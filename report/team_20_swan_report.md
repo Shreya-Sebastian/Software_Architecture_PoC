@@ -474,6 +474,14 @@ The second test, test_many_sensors, validates high concurrency. It simulates a m
 3. **Sustained Load**
 Finally, the test_sustained_load test validates the system's sustained throughput. This tests the system's long-term stability as it simulates a high volume stream of data from many sensors over a period of time. A passing test confirms that the consumer can process messages just as fast as the ingestion server publishes them, which is crucial for ensuring the message queue will not increase disproportionately during sustained load.
 
+## Future Work
+While the Proof of Concept confirmed the robustness and reliability of the data ingestion architecture, its endpoints were simulated. Future work for this subsection can involve moving this pipeline from a prototype to a more functional and secure component of the Smarter Home system. 
+
+**Develop the Data Consumer:** The PoC consumer only acknowledged messages to prove the pipeline worked. This can be replaced with a functional consumer that processes the incoming data and forwards it for analysis and storage.
+
+**Integrate Security:** The PoC validated data flow but not security. The Authentication services must be integrated with the ingestion server to ensure that only authorized and authenticated devices can send data into the system.
+
+
 ## References
 
 - Technavio. _Smart Home Market to Grow by USD 255.2 Billion, 2025–2029: Rising Consumer Interest in Home Automation Drives Growth; Report on How AI Is Redefining Market Landscape._ PR Newswire, 2023. [Link](https://www.prnewswire.com/news-releases/smart-home-market-to-grow-by-usd-255-2-billion-2025-2029-rising-consumer-interest-in-home-automation-drives-growth-report-on-how-ai-is-redefining-market-landscape---technavio-302362885.html)
