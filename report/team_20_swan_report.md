@@ -133,13 +133,13 @@ The following quality attributes define the non-functional requirements of the S
 
 - **Usability**: One of the goals of the Smarter Home is to be as accessible as possible. To achieve this goal, user interfaces must be simple and intuitive. Recommendations must show what information they're based on, so that the system can be trusted by technical and non-technical people alike.
 
-**Security**: This is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target. Moreover, only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
+- **Security**: This is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target. Moreover, only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
 
-**Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails. In this case, the system represents the backend, where the devices are local devices which should have a way to keep running if e.g. the internet fails.
+- **Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails. In this case, the system represents the backend, where the devices are local devices which should have a way to keep running if e.g. the internet fails.
 
 - **Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
 
-**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients. We plan to integrate with big sensor providers from which we can generate a lot of data.
+- **Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients. We plan to integrate with big sensor providers from which we can generate a lot of data.
 
 ### 6.1 Privacy vs. Correctness
 
@@ -157,13 +157,10 @@ The Smarter Home allows a greater part of the population to make use of all the 
 
 Now that we have discussed the problem, context, and quality goals of our system, we can describe the system architecture. We start by discussing the highest level, and subsequently zoom in to lower level abstractions.
 
-<!-- TODO link section requirements -->
-
 As detailed in the previous section, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view.
 
 #### 8.1.1 Options considered
 
-<!-- TODO Should this be a table?-->
 
 1. Local-only architecture
    - All data and control remain inside the users' home.
@@ -171,7 +168,7 @@ As detailed in the previous section, the Smarter Home system must preserve user 
    - Cons: Remote access is not straightforward; far less useable for non-technical users.
 2. Cloud-centric architecture
    - Processing and storage happens in the cloud.
-   - Pros: Remote access is more straightforward, centralized management, <!-- TODO reference cloud section? -->
+   - Pros: Remote access is more straightforward, centralized management, 
    - Cons: Sensitive data outside user control; offline operation impossible.
 3. Hybrid architecture
    - Combines a local and a cloud component.
@@ -289,14 +286,10 @@ Decomposing further, the figures below showcases the subdomains within the micro
 
 In the figure below we see the microservices in more detail. 
 
-<!-- TODO briefly explain components (or not, see example om brightspace)-->
-
 ![Component view of the cloud](images/cloud_component.png)
 
 
 #### Local Hub
-
-<!-- TODO briefly explain components -->
 
 ![Component view of the local hub](images/hub_component.png)
 
@@ -373,7 +366,7 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
-The open source components are summarized in the table below:
+The open source components and justifications for use are summarized in the table below:
 
 
 | Component | Open Source Tool | Why |
@@ -398,9 +391,7 @@ A hybrid approach would be ideal as real-time tasks can be handeled locally and 
 
 ## 11 Proof of Concept
 
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture.
-
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It implements the architectural decisions described in Section 2.3.4 <!-- TODO link? -->It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. 
+The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It implements the architectural decisions described in Section 2.3.4. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. 
 
 ### Implementation specifics
 
