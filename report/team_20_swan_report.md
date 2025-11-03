@@ -133,13 +133,13 @@ The following quality attributes define the non-functional requirements of the S
 
 - **Usability**: One of the goals of the Smarter Home is to be as accessible as possible. To achieve this goal, user interfaces must be simple and intuitive. Recommendations must show what information they're based on, so that the system can be trusted by technical and non-technical people alike.
 
-**Security**: This is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target. Moreover, only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
+- **Security**: This is a key concern for smart home systems in general. Firstly, this is because the risk involved: the loss of privacy or the loss of control over the devices in ones own home. Secondly, smart home systems are more vulnerable to cyberattacks due to their distrubuted, heterogeneous nature: all devices must be secure, otherwise they may form a gateway to the rest of the system. Additionally, the system is always active all the time and therefore always a possible target. Moreover, only authenticated users and devices should be able to access the system to view its recorded data or operate its devices.
 
-**Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails. In this case, the system represents the backend, where the devices are local devices which should have a way to keep running if e.g. the internet fails.
+- **Availability**: The system should not fail when any of its devices fail, and its devices should not be unusable if the system fails. In this case, the system represents the backend, where the devices are local devices which should have a way to keep running if e.g. the internet fails.
 
 - **Extensibility**: New types of sensors enter the market all the time. On a longer timescale, these devices may provide new types of data. To make sure our system can continue to offer accurate automation recommendations, our system must be readily extensible to support new devices and types of data.
 
-**Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients. We plan to integrate with big sensor providers from which we can generate a lot of data.
+- **Scalability**: This attribute is has two parts: First, as new devices enter the market, any home will need to support an increasing amount of them. Second, Any cloud functionality will need to be able to scale well with an increasing number of clients. We plan to integrate with big sensor providers from which we can generate a lot of data.
 
 ### 6.1 Privacy vs. Correctness
 
@@ -236,17 +236,19 @@ For reliable, resilient and scalable ingestion of sensor data with local bufferi
 #### 8.3.1 Alternatives considered
 
 1. REST
-   -Strengths: Firewall friendly, simple request/response with explicit chunked backlog upload, easy validation at edge & gateway, straightforward backoff, clear audit trails
-   -Weakness: Higher per-message overhead than MQTT, client-driven polling, not a PUSH protocol
+   - Strengths: Firewall friendly, simple request/response with explicit chunked backlog upload, easy validation at edge & gateway, straightforward backoff, clear audit trails
+   - Weakness: Higher per-message overhead than MQTT, client-driven polling, not a PUSH protocol
 2. MQTT
-   -Strengths: Designed for IoT, persistent sessions, low bandwidth and battery overhead
-   -Weakness: Requires broker at edge or cloud, more operational moving parts, message ordering nuances at scale
+   - Strengths: Designed for IoT, persistent sessions, low bandwidth and battery overhead
+   - Weakness: Requires broker at edge or cloud, more operational moving parts, message ordering nuances at scale
 3. Websockets
-   -Strengths: low-latency, server push, efficient for streaming, full-duplex
-   -Weaness: backpressure & reconnection logic needed, harder to batch
+   - Strengths: low-latency, server push, efficient for streaming, full-duplex
+   - Weakness: backpressure & reconnection logic needed, harder to batch
 4. UDP 
-   -Strengths: lightweight, suitable for constrained networks
-   -Weakness: UDP traveral, observability harder
+   - Strengths: lightweight, suitable for constrained networks
+   - Weakness: UDP traveral, observability harder
+
+Due to ease of handling of REST protocol and its usability suitable for smart home application, it is chosen for our system.
 
 ### 8.4 C4 Software Architecture Views
 
