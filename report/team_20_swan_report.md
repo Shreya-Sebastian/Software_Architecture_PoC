@@ -157,8 +157,6 @@ The Smarter Home allows a greater part of the population to make use of all the 
 
 Now that we have discussed the problem, context, and quality goals of our system, we can describe the system architecture. We start by discussing the highest level, and subsequently zoom in to lower level abstractions.
 
-<!-- TODO link section requirements -->
-
 As detailed in the previous section, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view. Before considering the options of what architecural decision to make, it is essential to look at the responsibilities that the cloud or local hub would have in their locations.
 
 | **Location**   | **Responsibilities**                                                                   |

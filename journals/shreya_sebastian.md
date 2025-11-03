@@ -38,4 +38,4 @@ I added another version of the PoC mechanism where there is a staggered test. He
 
 ## Week 9
 
-I finalized the pipeline to ensure all unit tests were included with the correct file paths (30 minutes). 
+I finalized the pipeline to ensure all unit tests were included with the correct file paths (30 minutes). I expanded on the Cloud vs on Premises Development section and related it to our Key Quality Attributes section (30 minutes). I polished the README section (30 minutes). Finally, I made general small edits across the report after proof-reading (2 hours). 
