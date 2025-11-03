@@ -212,7 +212,7 @@ In conclusion, we choose a hybrid approach: a microkernel architecture for the l
 
 ## 2.3 C4 Software Architecture Views
 
-> TODO section introduction
+In this section we view the system in 4 levels according to the C4 model (Brown). At the lower levels, we forego some level of detail as they are outside the scope of this report.
 
 ### 2.3.1 Context View
 
@@ -434,3 +434,5 @@ Finally, the test concludes by checking that the disconnected sensor's local buf
 - Thomas, R. _Microkernel Architecture_. Brisbane; University of Queensland, 2025 [PDF](https://csse6400.uqcloud.net/handouts/microkernel.pdf)
 
 - Richards, M. _Software architecture patterns: Understanding Common Architecture Patterns and when to Use Them_. O'Reilly Media, Inc. 2015
+
+- Brown, S. C4 Model. [Link](https://c4model.com/)
