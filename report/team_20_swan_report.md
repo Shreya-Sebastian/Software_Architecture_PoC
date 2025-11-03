@@ -157,7 +157,14 @@ The Smarter Home allows a greater part of the population to make use of all the 
 
 Now that we have discussed the problem, context, and quality goals of our system, we can describe the system architecture. We start by discussing the highest level, and subsequently zoom in to lower level abstractions.
 
-As detailed in Section 6, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view.
+### 8.1 Cloud vs. Local Responsibilities
+
+As detailed in Section 6, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view. Before considering the options of what architectural decision to make, it is essential to look at the responsibilities that the cloud or local hub would have in their locations.
+
+| **Location**   | **Responsibilities**                                                                   |
+| -------------- | -------------------------------------------------------------------------------------- |
+| Local Hub      | Data collection, storage, routine learning, automation execution, device communication |
+| Cloud Services | Remote access, authentication, update delivery, notification, multi-home scalability   |
 
 #### 8.1.1 Options considered
 
@@ -176,7 +183,7 @@ As detailed in Section 6, the Smarter Home system must preserve user privacy, be
 
 #### 8.1.2 Y-statement
 
-> In the context of enabling remote smart-home control while preserving privacy and ensuring ease of use, facing the challenge that cloud services simplify remote connectivity for the user but inherently risk exposure of personal data, we decided to divide the system into a local component handling all sensitive data and a cloud component providing remote access, to achieve strong privacy, remote access and user-friendly operation, accepting increased system complexity and dependency on local hardware for critical functionality.
+> In the context of enabling remote smart-home control while preserving privacy and ensuring ease of use, facing the challenge that cloud services simplify remote connectivity for the user but inherently risk exposure of personal data, we decided to divide the system into a local component handling all sensitive data and a cloud component providing remote access, accepting increased system complexity and dependency on local hardware for critical functionality.
 
 ### 8.2 Architectural styles
 
@@ -218,13 +225,32 @@ In conclusion, we choose a hybrid approach: a microkernel architecture for the l
 
 #### 8.2.6 Y-statement
 
-> In the context of choosing an architectural style for our system that deals with sensitive data locally, must remain accessible at all times, and must be adaptable to the changing landscape of IoT devices, facing the challenge that architectures that emphasize security often are at odds with those emphasizing extensibility and scalability, we decided to adopt a microkernel architecture for the local hub and a microservices architecture for the cloud component, to achieve security, availability, extensibility and scalability, accepting increased system complexity and the need for careful security mitigations in the cloud.
+> To satisfy our system's requirements for handling sensitive data locally, ensuring data availability, and adapting to the evolving IoT landscape, we resolved the inherent conflict between security and extensibility by adopting a hybrid microkernel architecture for the local hub and a microservices architecture for the cloud, accepting increased system complexity and the need for careful security mitigations in the cloud.
 
-### 8.3 C4 Software Architecture Views
+### 8.3 Architectural decision - Telemetry Ingestion Protocol
+
+For reliable, resilient and scalable ingestion of sensor data with local buffering (store-and-forward), a stateless HTTP ingestion service and RabbitMQ for decoupling can be used. The choice of transport protocol  materially affects reliability intermittent connectivity, observability and operational complexity.
+
+#### 8.3.1 Alternatives considered
+
+1. REST
+   -Strengths: Firewall friendly, simple request/response with explicit chunked backlog upload, easy validation at edge & gateway, straightforward backoff, clear audit trails
+   -Weakness: Higher per-message overhead than MQTT, client-driven polling, not a PUSH protocol
+2. MQTT
+   -Strengths: Designed for IoT, persistent sessions, low bandwidth and battery overhead
+   -Weakness: Requires broker at edge or cloud, more operational moving parts, message ordering nuances at scale
+3. Websockets
+   -Strengths: low-latency, server push, efficient for streaming, full-duplex
+   -Weaness: backpressure & reconnection logic needed, harder to batch
+4. UDP 
+   -Strengths: lightweight, suitable for constrained networks
+   -Weakness: UDP traveral, observability harder
+
+### 8.4 C4 Software Architecture Views
 
 In this section we view the system in 4 levels according to the C4 model (Brown). At the lower levels, we forego some level of detail as they are outside the scope of this report.
 
-#### 8.3.1 Context View
+#### 8.4.1 Context View
 
 The context view covers defines the relationship between Smarter home system and external parties or systems. It shows the interactions between users, devices and third-party platforms with the system when it operates.
 
@@ -245,7 +271,7 @@ The diagram identifies three external actors and one main system:
 
 ![Context View](images/context_view.png)
 
-### 8.3.2 Container view
+### 8.4.2 Container view
 
 In this section we show the different containers that make up the Smarter Home system. Previously we discussed that the system would consist of a cloud and a local component. Below is a diagram showing the different microservices of the cloud component, and the different plugins of the local hub.
 
@@ -277,7 +303,7 @@ Users operate their home through a mobile application. This application communic
 | Network Module        | Entry point for all requests to the local hub.                                                                                                                       |
 | Database              | Holds information on the connected devices, users of the Smarter Home, configured automations and sensor data before it is moved to cloud storage.                   |
 
-### 8.3.3 Component View
+### 8.4.3 Component View
 
 Decomposing further, the figures below showcases the subdomains within the microservices and plugins. The subdomains serve as a skeleton for the structure of the codebase. 
 
@@ -314,8 +340,7 @@ To solve these challenges, we have made the following architectural decisions:
 - **Store and Forward Mechanism**  
   Sensors are designed to buffer data to a local file if they cannot connect to the ingestion server. This prevents data loss during network outages by storing it locally and forwarding it once the connection is re-established.
 
-- **Durable Message Queue**  
-  The ingestion server is decoupled from the consumer using a message queue. The queue is configured to be durable, meaning that even if the message broker restarts, the queue and its messages persist, preventing data loss at the broker level.
+### 8.4.4 Class View
 
 - **Consumer Acknowledgments**  
   The consumer sends an explicit acknowledgment to the message broker only after it has successfully processed a message. If the consumer crashes before sending this acknowledgment, the broker re-queues the message to be processed again, ensuring no data is lost during consumer failures.
@@ -341,7 +366,7 @@ The diagram below shows a view of the Request Listening component of the Network
 
 ![Request listening](images/PoC_Architecture.png)
 
-### 8.3.5 Runtime view
+### 8.4.5 Runtime view
 
 In this section we discuss a runtime view illustrating how the cloud and local hub work together to connect the user to their home. The diagram below shows the interactions between the local hub,the cloud and their plug-ins and microservices, when the user wants to update a device. For example, updating a device could mean turning a light on or off.
 
@@ -369,13 +394,34 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
+The open source components are summarized in the table below:
+
+
+| Component | Open Source Tool | Why |
+| :--- | :--- | :--- |
+| Backend | FastAPI | High performance API handling |
+| Message Broker | RabbitMQ | Supports scaling, avoids data loss |
+| Database | PostgreSQL, TimescaleDB | Supports time series, structured relational DB |
+| Data validation | Pydantic | Validates sensor data before entering pipeline |
+| Analytics | Numpy, Pandas, scikit-learn | Transparent, interpretable routine detection |
+| Device Integration | Home Assistant | Easy extensibility |
+| Frontend | React | Easier to build UI |
+| Security | Keycloak | Secure Identity |
+| Deployment | Docker | Portable, modular microservice deployment |
+
 ## 10 Cloud vs on Premises Development
 
-There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware.
+There are several potential options for deployment models all with their own trade-offs. For instance, a fully private cloud model would provide benefits such as full sovereignty which in turn provides oppurtunites to ensure complete privacy of the user's data. This model aligns perfectly with the system's core privacy quality attribute and the ethical mitigations discussed, as sensitive data never leaves the user's home. It also ensures high availability for core automation tasks, as they would be unaffected by internet outages. However, a private cloud model in our case would be very difficult to scale as that would require the homeowner to upgrade their own hardware.
 
-For a public cloud model, the problem of scalability is solved as it makes use of a provider that is wholy dedicated to scaling. The problems of sovereignty and user privacy still persist as this model forces all sensitive user data to reside on third-party servers.
+For a public cloud model, the problem of scalability is solved as it makes use of a provider that is wholy dedicated to scaling. This approach would easily meet the scalability requirement, allowing the system to support a growing number of users and devices. The problems of sovereignty and user privacy still persist as this model forces all sensitive user data to reside on third-party servers. This creates a direct conflict with the system's security and privacy goals and exposes users to the risks discussed in the ethical analysis. Furthermore, the availability requirement is vulnerable, as an internet outage would cause the full system to be unusable.
 
-A Hybrid approach would be ideal as real-time tasks can be handeled locally and less sensitive/heavier computation can be handeled on the cloud. In this manner, high sovereignty and user privacy can be maintained while still benefitting from public cloud services.
+A hybrid approach would be ideal as real-time tasks can be handeled locally and less sensitive/heavier computation can be handeled on the cloud. This model is the one used in our architectural decision to split the system into a local hub and a cloud component. The local hub handles all sensitive data processing, ensuring privacy. The cloud component, in turn, manages less sensitive tasks like remote access, user authentication, and delivering system updates, as mentioned in the cloud architecture. In this manner, high sovereignty and user privacy can be maintained while still benefitting from the scalability offered by public cloud services.
+
+| **Deployment model**   | **Advantages**                                                         | **Disadvantages**                             |
+| ---------------------- | ---------------------------------------------------------------------- | --------------------------------------------- |
+| On Premises            | Is less dependent on internet, maximum sovereignty                     | No remote access, difficult to update         |
+| Public Cloud           | Supports remote access, easy to scale, can provide centralised updates | Privacy risk                                  |
+| Hybrid                 | local autonomy, supports remote access, updates                        | Requires coordination between cloud and local |
 
 ## 11 Proof of Concept
 
@@ -415,11 +461,41 @@ The test operates in three distinct phases:
 
 Finally, the test concludes by checking that the disconnected sensor's local buffer file is empty, providing a clear pass/fail result that confirms successful completion.
 
-#### 11.3.2 Testing Error Handling
+#### 11.3.2 Validating Error Handling
 
+The sensor's error handling mechanisms are validated by unit tests. These tests check the sensor's logic in isolation by simulating various server and network failures, rather than requiring a live server. Each test validates a specific part of the store and forward logic.
 
-#### 11.3.1 Testing Scalability 
+1. **Buffer Initialization**
+This test ensures that if a sensor starts while a previous buffer file exists on disk, it correctly loads that entire backlog into its memory upon initialization, ready to be sent when a connection is available.
 
+2. **Buffering on Failure**
+This test validates the core store and forward response. It simulates two scenarios, a complete network connection error and a server-side error. It confirms that in either scenario, the sensor successfully saves its new data to the local buffer file and correctly sets itself to offline.
+
+3. **Chunked Sending**
+This test validates the resynchronization logic. It confirms that a backlog is sent in smaller chunks. It also verifies that the sensor deletes only the specific chunk that was successfully sent, leaving the remaining backlog for the next resynchronization attempt.
+
+4. **Failed Resynchronization**
+This test validates data integrity during a connection loss. It simulates a server failure while a backlog chunk is being sent. The test confirms that the sensor does not delete the failed chunk from its buffer. It also verifies that any new data generated during this offline state is correctly added to the end of the backlog, ensuring that no data is lost.
+
+#### 11.3.1 Validating Scalability 
+
+The scalability of the system is validated by the tests in scalability_tests.py. These tests are run against the entire architecture (server, message broker and consumer). They are designed to measure the system's performance and stability under three different high-load scenarios.
+
+1. **Large Request**
+The first test, test_large_request, validates the system's large backlog processing capacity. This test simulates the resynchronization phase of a sensor that has been offline, sending thousands of buffered messages in a single request. A passing test proves that the ingestion_server can handle a large load without crashing, successfully publish all individual messages to the message broker, and handle the resulting large spike in the queue.
+
+2. **High Concurrency**
+The second test, test_many_sensors, validates high concurrency. It simulates a moment where many different sensors send data at the same time. This test validates the server's ability to manage a large number of simultaneous connections and handle many small, separate requests without dropping any.
+
+3. **Sustained Load**
+Finally, the test_sustained_load test validates the system's sustained throughput. This tests the system's long-term stability as it simulates a high volume stream of data from many sensors over a period of time. A passing test confirms that the consumer can process messages just as fast as the ingestion server publishes them, which is crucial for ensuring the message queue will not increase disproportionately during sustained load.
+
+## Future Work
+While the Proof of Concept confirmed the robustness and reliability of the data ingestion architecture, its endpoints were simulated. Future work for this subsection can involve moving this pipeline from a prototype to a more functional and secure component of the Smarter Home system. 
+
+**Develop the Data Consumer:** The PoC consumer only acknowledged messages to prove the pipeline worked. This can be replaced with a functional consumer that processes the incoming data and forwards it for analysis and storage.
+
+**Integrate Security:** The PoC validated data flow but not security. The Authentication services must be integrated with the ingestion server to ensure that only authorized and authenticated devices can send data into the system.
 
 
 ## References

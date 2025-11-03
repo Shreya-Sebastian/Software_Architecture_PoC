@@ -111,10 +111,7 @@ def test_many_sensors():
 def test_sustained_load():
     # Large load over time
     total_messages = TEST_3_SENSORS * TEST_3_MESSAGES_PER
-    print(
-        f"\nRunning test_sustained_load ({TEST_3_SENSORS} sensors, "
-        f"{TEST_3_MESSAGES_PER} msg/each = {total_messages} total)..."
-    )
+    print(f"\nRunning test_sustained_load ({total_messages} total)...")
 
     def sensor_worker(sensor_id):
         # worker simulating one sensor sending multiple readings
@@ -148,4 +145,4 @@ def test_sustained_load():
 
     assert (
         total_successes == total_messages
-    ), f"Failed messages: {total_messages - total_successes} / {total_messages}"
+    ), f"Failed messages: {total_messages - total_successes}"
