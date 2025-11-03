@@ -30,5 +30,12 @@ I polished the PoC a bit and created a readme file (2 hours). In the report, I d
 
 ## Week 7
 I updated the context analysis section to be in line with the feedback we got earlier and added a context diagram (2 hours). I also reworked the ethical implications section to be a bit less redundant and made other small edits (1 hour). 
-For the PoC, I added
+For the PoC, I pinpointed the reason for the server load issue (2 hours). This issue was caused by service logs piling up so these logs were removed. I also added logic to ensure that the backlog buffer is sent to the server in chunks during resynchronisation to avoid overloading the server (2 hours). I added unit tests that test the logic within the sensor simulator file (3 hours). These tests validate the error handling capabilities of the PoC. 
 
+## Week 8
+
+I added another version of the PoC mechanism where there is a staggered test. Here, multiple sensors disconnect and reconnect at different times, making it a more complex test case. This test passing proves the robustness of the PoC even more so than the standard 3 phases test (3 hours). I also added unit tests for scalability as the load the server could handle was not yet tested (2 hours 30 minutes). I also containerized the PoC using docker (2 hours), putting the server, the consumer and the message broker in their own containers. Using separate containers enables each one to function independently of the others statuses. I later had to make a fix to the containerization as the PoC test was nor able to connect to the server (1 hour). 
+
+## Week 9
+
+I finalized the pipeline to ensure all unit tests were included with the correct file paths (30 minutes). 
