@@ -34,7 +34,7 @@ For the PoC, I pinpointed the reason for the server load issue (2 hours). This i
 
 ## Week 8
 
-I added another version of the PoC mechanism where there is a staggered test. Here, multiple sensors disconnect and reconnect at different times, making it a more complex test case. This test passing proves the robustness of the PoC even more so than the standard 3 phases test (3 hours). I also added unit tests for scalability as the load the server could handle was not yet tested (2 hours 30 minutes). I also containerized the PoC using docker (2 hours), putting the server, the consumer and the message broker in their own containers. Using separate containers enables each one to function independently of the others statuses. I later had to make a fix to the containerization as the PoC test was nor able to connect to the server (1 hour). 
+I added another version of the PoC mechanism where there is a staggered test. Here, multiple sensors disconnect and reconnect at different times, making it a more complex test case. This test passing proves the robustness of the PoC even more so than the standard 3 phases test (3 hours). I also added tests for scalability as the load the server could handle was not yet tested (2 hours 30 minutes). I also containerized the PoC using docker (2 hours), putting the server, the consumer and the message broker in their own containers. Using separate containers enables each one to function independently of the others statuses. I later had to make a fix to the containerization as the PoC test was nor able to connect to the server (1 hour). 
 
 ## Week 9
 
