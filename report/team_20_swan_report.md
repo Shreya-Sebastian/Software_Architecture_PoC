@@ -168,7 +168,6 @@ As detailed in the previous section, the Smarter Home system must preserve user 
 
 #### 8.1.1 Options considered
 
-<!-- TODO Should this be a table?-->
 
 1. Local-only architecture
    - All data and control remain inside the users' home.
@@ -176,7 +175,7 @@ As detailed in the previous section, the Smarter Home system must preserve user 
    - Cons: Remote access is not straightforward; far less useable for non-technical users.
 2. Cloud-centric architecture
    - Processing and storage happens in the cloud.
-   - Pros: Remote access is more straightforward, centralized management, <!-- TODO reference cloud section? -->
+   - Pros: Remote access is more straightforward, centralized management, 
    - Cons: Sensitive data outside user control; offline operation impossible.
 3. Hybrid architecture
    - Combines a local and a cloud component.
@@ -315,14 +314,10 @@ Decomposing further, the figures below showcases the subdomains within the micro
 
 In the figure below we see the microservices in more detail. 
 
-<!-- TODO briefly explain components (or not, see example om brightspace)-->
-
 ![Component view of the cloud](images/cloud_component.png)
 
 
 #### Local Hub
-
-<!-- TODO briefly explain components -->
 
 ![Component view of the local hub](images/hub_component.png)
 
@@ -398,7 +393,7 @@ The security and the privacy are central to any smart home system. Open source t
 
 For deployment and maintenance, Docker offers a straightforward and reliable way. Docker will package and run each part of the system in its own isolated environment. This ensures that the different components of the system work consistently across setups and are easy to update or replace when needed. Its lightweight nature also makes development and testing more efficient. This allows the system to stay modular and stable as it grows. Given these advantages, Docker is the clear choice for managing deployment in our Smarter Home project.
 
-The open source components are summarized in the table below:
+The open source components and justifications for use are summarized in the table below:
 
 
 | Component | Open Source Tool | Why |
@@ -429,9 +424,7 @@ A hybrid approach would be ideal as real-time tasks can be handeled locally and 
 
 ## 11 Proof of Concept
 
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. It also tackles the problem of scalability with the use of a decoupled architecture.
-
-The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It implements the architectural decisions described in Section 2.3.4 <!-- TODO link? -->It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. 
+The **Smarter Home PoC** is a functional prototype demonstrating a robust and reliable architecture for ingesting data from IoT sensors. It implements the architectural decisions described in Section 2.3.4. It specifically simulates a real-world environment where network connectivity can be intermittent, proving that data can be collected without loss, even under unstable conditions. 
 
 ### Implementation specifics
 

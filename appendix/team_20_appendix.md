@@ -24,3 +24,10 @@ The following requirements are essential to the Smarter Home:
    - Users can perform any action remotely.
 - Third party integration:
    - The system can integrated with third party services like Alexa, Siri, IFTTT, 
+
+
+## Appendix B: GenAI prompts
+
+- "The server is disconnecting even under minimal load, find the issue"
+- "Give ideas to test the error handling of the given system"
+- "Give ideas to test the scalability of the given system"

@@ -16,21 +16,40 @@ The system uses a FastAPI server for ingestion, RabbitMQ as a message broker, an
 
 ---
 
-## How to Run
+### Option 1: Run the Full PoC Simulation Locally
 
-This method runs the ingestion server, consumer, and RabbitMQ message broker in containers. You then run the test script from your host machine to interact with the containerized server.
+This method runs the entire simulation from your local machine, using the `run_poc_test.py` script to orchestrate all the services. It only uses Docker for the RabbitMQ message broker.
 
-### Prerequisites
+**Prerequisites:**
 * Docker
-* Docker Compose
-* Python 3.8+ (for running the test script locally)
+* Python 3.8+
 
+**1. Start the RabbitMQ Service**
 
-From the root of the project, run:
+In a terminal, run the RabbitMQ container. This will provide the message broker that the local server and consumer will connect to:
 
 ```shell
-docker-compose up --build
-```
+docker run -d --name rabbitmq-poc -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+``` 
+
+**2. Set Up Your Python Environment**
+
+From the root of the project, create a virtual environment and install the required dependencies:
+
+```shell
+# Create a virtual environment
+python -m venv venv
+
+# Activate it (Linux/macOS)
+source venv/bin/activate
+
+# Activate it (Windows)
+.\venv\Scripts\activate
+
+# Install requirements
+pip install -r requirements.txt
+``` 
+
 
 In a new terminal, run the run_poc_test.py script (within the poc folder): 
 
@@ -50,15 +69,36 @@ The script will execute a three-phase test:
 
 ---
 
+
+### Option 2: Run All Services with Docker Compose
+
+This method runs the ingestion server, consumer, and RabbitMQ message broker in containers. This is useful if you want to run the infrastructure and test it manually or with a separate script (like the pytest files).
+
+**Prerequisites:**
+* Docker
+* Docker Compose
+
+From the root of the project, run:
+
+```shell
+docker-compose up --build
+```
+
 ## Running Unit Tests
 
 The PoC includes unit tests for the sensor logic (`test_sensors.py`).
-These tests run in isolation and do not require a live RabbitMQ server.
+The error handling test run in isolation and do not require a live RabbitMQ server.
 
 1.  **Run the tests:**
     From within the poc folder, run `python -m pytest -v` to run the unit tests testing error handling and scalability.
 
-    ```shell
-    python -m pytest -v error_handling_tests.py
-    python -m pytest -v scalability_tests.py
-    ```
+```shell
+# Test the sensor's error handling and buffering logic
+python -m pytest -v error_handling_tests.py
+
+# Run the scalability/load tests (requires the server to be running)
+# First, start the services (e.g., with 'docker-compose up')
+# Then, in a new terminal:
+python -m pytest -v scalability_tests.py
+```
+---
