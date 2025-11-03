@@ -144,7 +144,7 @@ The Smarter Home allows a greater part of the population to make use of all the 
 
 # 2. System Architecture
 
->TODO INTRODUCE THIS SECTION
+Now that we have discussed the problem, context, and quality goals of our system, we can describe the system architecture. We start by discussing the highest level, and subsequently zoom in to lower level abstractions.
 
 ## 2.1 Local vs. Cloud Responsibilities
 <!-- TODO link section requirements -->
