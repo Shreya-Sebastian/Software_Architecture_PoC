@@ -445,12 +445,34 @@ The test operates in three distinct phases:
 
 Finally, the test concludes by checking that the disconnected sensor's local buffer file is empty, providing a clear pass/fail result that confirms successful completion.
 
-#### 11.3.2 Testing Error Handling
+#### 11.3.2 Validating Error Handling
 
+The sensor's error handling mechanisms are validated by unit tests. These tests check the sensor's logic in isolation by simulating various server and network failures, rather than requiring a live server. Each test validates a specific part of the store and forward logic.
 
-#### 11.3.1 Testing Scalability 
+1. **Buffer Initialization**
+This test ensures that if a sensor starts while a previous buffer file exists on disk, it correctly loads that entire backlog into its memory upon initialization, ready to be sent when a connection is available.
 
+2. **Buffering on Failure**
+This test validates the core store and forward response. It simulates two scenarios, a complete network connection error and a server-side error. It confirms that in either scenario, the sensor successfully saves its new data to the local buffer file and correctly sets itself to offline.
 
+3. **Chunked Sending**
+This test validates the resynchronization logic. It confirms that a backlog is sent in smaller chunks. It also verifies that the sensor deletes only the specific chunk that was successfully sent, leaving the remaining backlog for the next resynchronization attempt.
+
+4. **Failed Resynchronization**
+This test validates data integrity during a connection loss. It simulates a server failure while a backlog chunk is being sent. The test confirms that the sensor does not delete the failed chunk from its buffer. It also verifies that any new data generated during this offline state is correctly added to the end of the backlog, ensuring that no data is lost.
+
+#### 11.3.1 Validating Scalability 
+
+The scalability of the system is validated by the tests in scalability_tests.py. These tests are run against the entire architecture (server, message broker and consumer). They are designed to measure the system's performance and stability under three different high-load scenarios.
+
+1. **Large Request**
+The first test, test_large_request, validates the system's large backlog processing capacity. This test simulates the resynchronization phase of a sensor that has been offline, sending thousands of buffered messages in a single request. A passing test proves that the ingestion_server can handle a large load without crashing, successfully publish all individual messages to the message broker, and handle the resulting large spike in the queue.
+
+2. **High Concurrency**
+The second test, test_many_sensors, validates high concurrency. It simulates a moment where many different sensors send data at the same time. This test validates the server's ability to manage a large number of simultaneous connections and handle many small, separate requests without dropping any.
+
+3. **Sustained Load**
+Finally, the test_sustained_load test validates the system's sustained throughput. This tests the system's long-term stability as it simulates a high volume stream of data from many sensors over a period of time. A passing test confirms that the consumer can process messages just as fast as the ingestion server publishes them, which is crucial for ensuring the message queue will not increase disproportionately during sustained load.
 
 ## References
 

@@ -57,7 +57,6 @@ def post_data_worker(payload_list, sensor_id="default"):
 
 # Scalability Tests
 
-
 @pytest.mark.usefixtures("server_is_ready")
 def test_large_request():
     # Single large request
@@ -112,8 +111,7 @@ def test_sustained_load():
     # Large load over time
     total_messages = TEST_3_SENSORS * TEST_3_MESSAGES_PER
     print(
-        f"\nRunning test_sustained_load ({TEST_3_SENSORS} sensors, "
-        f"{TEST_3_MESSAGES_PER} msg/each = {total_messages} total)..."
+        f"\nRunning test_sustained_load ({total_messages} total)..."
     )
 
     def sensor_worker(sensor_id):
@@ -148,4 +146,4 @@ def test_sustained_load():
 
     assert (
         total_successes == total_messages
-    ), f"Failed messages: {total_messages - total_successes} / {total_messages}"
+    ), f"Failed messages: {total_messages - total_successes}"
