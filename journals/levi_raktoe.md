@@ -34,12 +34,12 @@ This was a hectic week because of other responsibilities. With the Heron deadlin
 
 ### Week 7
 
-I spend time going through the report of another team for the peer review. It was interesting to see another teams take on the assignment, I found their work quite impressive.
+I spend time going through the report of another team for the peer review. It was interesting to see another teams take on the assignment, I found their work quite impressive. I spent a few evenings reading and working through it. 
 
 ### Week 8
 
-I went over the feedback by the TA and the peer reviewers. There were some good points so I took a few days to correct and expand the sections relating to the architecture. The presentation was also coming up so I spend time improving the diagrams. I ended up only using one in my part of the presentation due to time constraints. 
+I went over the feedback by the TA and the peer reviewers. There were some good points so I took a few days to correct and expand the sections relating to the architecture. The presentation was also coming up so I spend time improving the diagrams. I ended up only using one in my part of the presentation due to time constraints. I added another alternative and redid the component view. 
 
 ### Week 9
 
-There were still some paragraphs to expand, diagrams to further explain. In general, putting the finishing touches on the report.
+There were still some paragraphs to expand, diagrams to further explain. I moved some PoC discussion to the architecture as it was a better fit. In general, putting the finishing touches on the report.s

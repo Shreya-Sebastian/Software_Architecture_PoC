@@ -157,9 +157,9 @@ The Smarter Home allows a greater part of the population to make use of all the 
 
 Now that we have discussed the problem, context, and quality goals of our system, we can describe the system architecture. We start by discussing the highest level, and subsequently zoom in to lower level abstractions.
 
-<!-- TODO link section requirements -->
+### 8.1 Cloud vs. Local Responsibilities
 
-As detailed in the previous section, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view. Before considering the options of what architecural decision to make, it is essential to look at the responsibilities that the cloud or local hub would have in their locations.
+As detailed in Section 6, the Smarter Home system must preserve user privacy, be accessible remotely, and be useable by non-technical users. These goals are at odds with each other, as remote access implies some kind of networked service, while preserving privacy calls for local control of sensitive data. Finally, usability to the layman suggests that any solution to this tension be solved outside the users' view. Before considering the options of what architectural decision to make, it is essential to look at the responsibilities that the cloud or local hub would have in their locations.
 
 | **Location**   | **Responsibilities**                                                                   |
 | -------------- | -------------------------------------------------------------------------------------- |
@@ -168,14 +168,13 @@ As detailed in the previous section, the Smarter Home system must preserve user 
 
 #### 8.1.1 Options considered
 
-
 1. Local-only architecture
    - All data and control remain inside the users' home.
    - Pros: Privacy is best protected.
    - Cons: Remote access is not straightforward; far less useable for non-technical users.
 2. Cloud-centric architecture
    - Processing and storage happens in the cloud.
-   - Pros: Remote access is more straightforward, centralized management, 
+   - Pros: Remote access is more straightforward, centralized management.
    - Cons: Sensitive data outside user control; offline operation impossible.
 3. Hybrid architecture
    - Combines a local and a cloud component.
