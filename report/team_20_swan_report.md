@@ -180,7 +180,7 @@ As detailed in the previous section, the Smarter Home system must preserve user 
 
 #### 8.1.2 Y-statement
 
-> In the context of enabling remote smart-home control while preserving privacy and ensuring ease of use, facing the challenge that cloud services simplify remote connectivity for the user but inherently risk exposure of personal data, we decided to divide the system into a local component handling all sensitive data and a cloud component providing remote access, to achieve strong privacy, remote access and user-friendly operation, accepting increased system complexity and dependency on local hardware for critical functionality.
+> In the context of enabling remote smart-home control while preserving privacy and ensuring ease of use, facing the challenge that cloud services simplify remote connectivity for the user but inherently risk exposure of personal data, we decided to divide the system into a local component handling all sensitive data and a cloud component providing remote access, accepting increased system complexity and dependency on local hardware for critical functionality.
 
 ### 8.2 Architectural styles
 
@@ -222,7 +222,7 @@ In conclusion, we choose a hybrid approach: a microkernel architecture for the l
 
 #### 8.2.6 Y-statement
 
-> In the context of choosing an architectural style for our system that deals with sensitive data locally, must remain accessible at all times, and must be adaptable to the changing landscape of IoT devices, facing the challenge that architectures that emphasize security often are at odds with those emphasizing extensibility and scalability, we decided to adopt a microkernel architecture for the local hub and a microservices architecture for the cloud component, to achieve security, availability, extensibility and scalability, accepting increased system complexity and the need for careful security mitigations in the cloud.
+> To satisfy our system's requirements for handling sensitive data locally, ensuring data availability, and adapting to the evolving IoT landscape, we resolved the inherent conflict between security and extensibility by adopting a hybrid microkernel architecture for the local hub and a microservices architecture for the cloud, accepting increased system complexity and the need for careful security mitigations in the cloud.
 
 ### 8.3 C4 Software Architecture Views
 
