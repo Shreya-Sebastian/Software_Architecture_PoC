@@ -1,33 +1,45 @@
 # Smarter Home - Data Ingestion PoC
 
-This is a Proof of Concept demonstrating a fault-tolerant data ingestion architecture for IoT sensors. It simulates sensors that buffer data locally during network outages and resynchronize upon reconnection with the server.
+This is a Proof of Concept (PoC) demonstrating a fault-tolerant, data ingestion architecture for IoT sensors. It simulates sensors that buffer data locally during network outages and resynchronize upon reconnection with the server.
+
+The system uses a FastAPI server for ingestion, RabbitMQ as a message broker, and a separate consumer script for processing.
+
+## Architecture
+
+* **`ingestion_server`**: A FastAPI web server that receives sensor data via a POST request and publishes it to a RabbitMQ queue.
+* **`consumer`**: A Python script that connects to RabbitMQ, consumes messages from the queue, and 'processes' them (prints to console).
+* **`sensor_simulator`**: A Python class that simulates multiple sensors. Each sensor can be disconnected, at which point it buffers its generated data to a local `.log` file. Upon reconnection, it sends its entire backlog.
+* **`run_poc_test`**: An orchestration script that runs a three-phase simulation to test the system's fault tolerance.
+* **`rabbitmq`**: The RabbitMQ service, acting as a message broker between the server and the consumer.
+* **`Dockerfile` / `docker-compose.yml`**: Files to build and orchestrate the entire application (server, consumer, and message broker) using Docker.
+* `.gitlab-ci.yml`: A CI/CD pipeline configured for GitLab to automatically build, test, and style-check the code.
 
 ---
 
 ## How to Run
 
-### Prerequisites
-* Python 3.8+
-* A running RabbitMQ instance.
+This method runs the ingestion server, consumer, and RabbitMQ message broker in containers. You then run the test script from your host machine to interact with the containerized server.
 
+### Prerequisites
+* Docker
+* Docker Compose
+* Python 3.8+ (for running the test script locally)
+
+
+From the root of the project, run:
+
+```shell
+docker-compose up --build
+```
+
+In a new terminal, run the run_poc_test.py script (within the poc folder): 
+
+```shell
+cd poc
+python run_poc_test.py
+```
 ---
 
-> With Docker, you can start a RabbitMQ container for this purpose with the following command. It will be accessible on `localhost`.
-> ```shell
-> docker run -d --hostname my-rabbit --name poc-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-> ```
-
-1.  **Install dependencies:**
-    ```shell
-    pip install fastapi uvicorn pika requests pytest pytest-mock requests-mock
-    ```
-
-2.  **Run the simulation:**
-    ```shell
-    python run_poc_test.py
-    ```
-
-python run_poc_test.py
 The script will execute a three-phase test:
 
 * Normal Operation: All sensors are connected and sending data.
@@ -44,8 +56,9 @@ The PoC includes unit tests for the sensor logic (`test_sensors.py`).
 These tests run in isolation and do not require a live RabbitMQ server.
 
 1.  **Run the tests:**
-    From the root directory, run `pytest`. Using `python -m pytest -v` ensures the correct executable is found.
+    From within the poc folder, run `python -m pytest -v` to run the unit tests testing error handling and scalability.
 
     ```shell
-    python -m pytest -v
+    python -m pytest -v error_handling_tests.py
+    python -m pytest -v scalability_tests.py
     ```

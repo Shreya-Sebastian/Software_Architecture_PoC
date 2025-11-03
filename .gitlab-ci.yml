@@ -1,7 +1,7 @@
 # This pipeline demonstrates a basic 3 stage CI/CD pipeline. 
 
 stages:
-  - style
+  - style 
   - build
   - test
 
@@ -9,9 +9,10 @@ stages:
 workflow:
   rules:
     - changes:
-        - '*.py'
+        - 'poc/*.py'
       when: always
     - when: never
+
 
 style-check:
   stage: style
@@ -19,14 +20,12 @@ style-check:
   image: python:3.11
   before_script:
     - python --version
-    - pip install -r requirements.txt
+    - pip install -r poc/requirements.txt
   script:
-    - echo "Installing formatter (black)..."
-    - pip install "black>=23.0.0"
     - echo "Checking Python syntax (compile all files)..."
-    - python -m compileall .
+    - python -m compileall poc/
     - echo "Running black in check mode..."
-    - black --check --diff .
+    - black --check --diff poc/
   allow_failure: false
 
 build-image:
@@ -39,37 +38,69 @@ build-image:
     # Use TLS for the DinD service
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
+    - echo "Waiting for Docker daemon to be ready..."
+    - while ! docker info > /dev/null 2>&1; do
+    -   echo -n "."
+    -   sleep 1
+    - done
+    - echo "Docker daemon is ready."
     # Log in to the GitLab Container Registry
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo "Building Docker image..."
-    # Build the image using the Dockerfile 
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    # Build the image using the Dockerfile
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA poc/
     - echo "Pushing Docker image to registry..."
     # Push the image so test jobs can use it
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
-run-unit-tests:
+run-error_handling-tests:
   stage: test
   # Use the image built in the 'build-image' job
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script: [] 
   script:
     - echo "Running unit tests inside the Docker container..."
-    - python -m pytest -v
+    - cd poc
+    - python -m pytest -v error_handling_tests.py
 
-run-poc:
+run-scalability-tests:
   stage: test
-  # Use the image we just built
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  before_script: [] 
   services:
-    # Add the RabbitMQ service
+    # This job also needs RabbitMQ
     - name: rabbitmq:3-management
       alias: rabbitmq
   variables:
-    # Set the environment variable so scripts can find RabbitMQ
     RABBITMQ_HOST: rabbitmq
+  before_script:
+    - echo "Waiting 10s for RabbitMQ service..."
+    - sleep 10
+    - echo "Starting background services for scalability test..."
+    - python consumer.py &
+    - uvicorn ingestion_server:app --host 0.0.0.0 --port 8000 &
+    - echo "Waiting 10s for server and consumer to be ready..."
+    - sleep 10
   script:
-    - echo "Running PoC test script (run_poc_test.py) inside the Docker container..."
+    - echo "Running scalability tests..."
+    - cd poc
+    - python -m pytest -v scalability_tests.py
+
+run-poc:
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  services:
+    - name: rabbitmq:3-management
+      alias: rabbitmq
+  variables:
+    # This overrides the default 'localhost' in the Python scripts
+    RABBITMQ_HOST: rabbitmq
+
+  before_script: [] 
+
+  script:
+    - echo "Waiting 10s for RabbitMQ service to initialize..."
+    - sleep 10
+    - echo "Running the PoC phases test..."
+    - cd poc
     - python run_poc_test.py
