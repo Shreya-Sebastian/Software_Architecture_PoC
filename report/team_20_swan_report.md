@@ -140,7 +140,7 @@ As every device connected to the system is an avenue for attack, constraints nee
 
 ## Pricing model
 
-The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacterers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
+The Smarter Home allows a greater part of the population to make use of all the useful features smart home systems already offer. Therefore, we plan to partner with existing smart home device manufacturers to integrate their products with our system, making them more accessible, leading more customers to these companies. These deals would finance Smarter Home.
 
 # 2. System Architecture
 
@@ -245,6 +245,8 @@ Users operate their home through a mobile application. This application communic
 
 #### Cloud building blocks:
 
+<!-- TODO mention discovery pattern -->
+
 | **Building block** | **Description** |
 | ------------------ | --------------- |
 | API gateway | Entry point for all requests to the cloud and can forward requests to the local hub (Richardson). |
@@ -269,36 +271,22 @@ Users operate their home through a mobile application. This application communic
 
 ### 2.3.3 Component View
 
-The component view shows the decomposition of the system's internal functionality into modules, services and other building blocks. Each component has a distinct responsibility and communicates via defined interfaces.
+Decomposing further, the figures below showcases the subdomains within the microservices and plugins. The subdomains serve as a skeleton for the structure of the codebase. 
 
-The Smarter home system can be divided into two main environments - Local Hub and Cloud Services.
+#### Cloud
+
+In the figure below we see the microservices in more detail. 
+
+<!-- TODO briefly explain components (or not, see example om brightspace)-->
+
+![Component view of the cloud](images/cloud_component.png)
+
 
 #### Local Hub
-Responsible for local processing and ensuring that automations work even offline.
-1. Core - It orchestrates communication between all local components.
-2. Device Communication - It interferes with sensors using standard protocols like Wi-Fi.
-3. Routine Detection - It analyzes incoming event streams to identify user behavior patterns.
-4. Automation Suggestion - It generates automations based on learned routines.
-5. User Management - It handles user authentication, role-based access and permissions.
 
-#### Cloud Services
-Responsible for data storage and analytics.
-1. API Gateway - It exposes REST APIs to the app, Local Hub and third-party systems.
-2. Authentication - It manages identity verification.
-3. Notifications - It sends user alerts about new automations, security events or system updates.
+<!-- TODO briefly explain components -->
 
-#### Shared Infrastructure
-1. Database - It's used for long-term storage of user profiles, device data, automation logs and learned models.
-2. Message Queue (RabbitMQ) - It decouples data ingestion and processing for scalability and fault tolerance.
-
-#### Interactions
-
-1. Local Hub components publish events to the Message Queue, consumed by Cloud services for aggregation.
-2. The Core communicates with API gateway for cloud synchronisation.
-3. The data and command traffic reach the database through API layer.
-
-![Component View](images/component_view.png)
-
+![Component view of the local hub](images/hub_component.png)
 
 
 ### 2.3.4 Class View 
