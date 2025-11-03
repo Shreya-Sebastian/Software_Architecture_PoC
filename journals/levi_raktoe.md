@@ -20,7 +20,7 @@ Worked on the functional requirements, quality attributes, pricing model, domain
 
 ### Week 4
 
-I worked on the slides for my parts of the Finch release to present on monday. I was very impressed with the work of the other team and felt we might not be on track, but was relieved when the TA said it was fine. The main feedback that we received was that our report should have more of a story, and pictures.
+I worked on the slides for my parts of the Finch release to present on Monday. I was very impressed with the work of the other team and felt we might not be on track, but was relieved when the TA said it was fine. The main feedback that we received was that our report should have more of a story, and pictures.
 
 ### Week 5
 
@@ -30,6 +30,16 @@ We had a meeting to discuss plans for the POC. We decided that the POC would add
 
 This was a hectic week because of other responsibilities. With the Heron deadline coming up I read up on monolithic, microkernel and microservice architectures. Based on that, I wrote the part of the report deciding which architectures would be used. I also made a component and runtime view diagram.
 
+## Swan
+
 ### Week 7
 
-I spend time reading the
+I spend time going through the report of another team for the peer review. It was interesting to see another teams take on the assignment, I found their work quite impressive.
+
+### Week 8
+
+I went over the feedback by the TA and the peer reviewers. There were some good points so I took a few days to correct and expand the sections relating to the architecture. The presentation was also coming up so I spend time improving the diagrams. I ended up only using one in my part of the presentation due to time constraints. 
+
+### Week 9
+
+There were still some paragraphs to expand, diagrams to further explain. In general, putting the finishing touches on the report.
