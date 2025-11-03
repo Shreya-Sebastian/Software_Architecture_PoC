@@ -110,9 +110,6 @@ Compliance with data protection and privacy regulations like the GDPR is essenti
 
 The system’s AI requires ongoing user interactions to refine its suggestions and adapt to individual preferences. Adoption and sustained engagement depend on intuitive interfaces and user trust (Zigpoll, 2023). If the system is overly complex or fails to establish trust, potential users may hesitate to engage with it (Fischer et al.). The system's AI requires continuous user interaction to refine its understanding of their preferences. It depends on users actively confirming, rejecting, or modifying the automations it suggests. If the interface for providing feedback is inconvenient, users may become passive. The user may also expect the generated suggestions to come with explanations of why that suggestion is being proposed to the user. This addition of explanations help users understand how the system operates better, increasing overall trust in the system.
 
-To summarize these dependencies, the context diagram below illustrates the system's relationship with external entities:
-
-![Context Diagram](images/Context_Diagram.png)
 
 ## 5 Ethical Implications and Mitigations
 
@@ -399,16 +396,13 @@ The PoC architecture is as follows:
 
 To solve the key problems mentioned, the PoC employs several architectural decisions:
 
-#### 11.2.1 Tackling the problem of Data Integrity
+#### 11.2.1 Adressing Error Handling
 
 - **Store and Forward Mechanism**  
   Sensors are designed to buffer data to a local file if they cannot connect to the ingestion server. This prevents data loss during network outages by storing it locally and forwarding it once the connection is re-established.
 
 - **Durable Message Queue**  
   The use of RabbitMQ as a message broker decouples the ingestion server from the consumer. The queue is configured to be durable, meaning that even if the message broker restarts, the queue and its messages persist, preventing data loss at the broker level.
-
-- **Persistent Messages**  
-  Messages are published to the queue with a persistent delivery mode. This ensures that messages written to the queue are saved to disk and will survive a broker restart.
 
 - **Consumer Acknowledgments**  
   The consumer sends an explicit acknowledgment to the message broker only after it has successfully processed a message. If the consumer crashes before sending this acknowledgment, the broker re-queues the message to be processed again, ensuring no data is lost during consumer failures.
@@ -421,18 +415,22 @@ To solve the key problems mentioned, the PoC employs several architectural decis
 - **Decoupled Architecture**  
   The message queue is the central element that allows components to scale independently. The ingestion server can handle a high volume of incoming sensor data without being slowed down by the consumer's processing speed. The queue absorbs traffic bursts, allowing the system to handle load gracefully.
 
-- **Horizontal Consumer Scaling**  
-  The architecture allows for running multiple instances of the consumer process. Each consumer can work on messages from the same queue in parallel, allowing the data processing capacity to be scaled up or down simply by adding or removing consumer instances.
-
-- **Balanced Load Distribution**  
-  The consumer is configured with a `prefetch_count` of 1. When multiple consumers are running, this setting ensures that each consumer is only working on one message at a time, preventing a single fast consumer from hoarding all the messages and allowing for an even distribution of work.
-
 - **Lightweight Ingestion Server**  
   The ingestion server's role is minimal: accept, validate, and forward. By offloading processing to the consumers, the server remains lightweight and can handle a high number of concurrent HTTP connections, making the data ingestion point highly scalable.
 
+- **Horizontal Consumer Scaling**  
+  The architecture allows for running multiple instances of the consumer process. Each consumer can work on messages from the same queue in parallel, allowing the data processing capacity to be scaled up or down simply by adding or removing consumer instances.
+
+- **Buffer Chunking During Resnychronization**  
+  When a sensor reconnects after being offline, it avoids sending its entire data backlog at once by using message chunking. This strategy is assists with scalability since it prevents a single sensor from overwhelming the ingestion server, avoiding resource exhaustion and request timeouts. Furthermore, if a single chunk fails to send, the sensor only needs to retry the remaining messages in the buffer instead of the full buffer, optimizing the resynchronization process.
+
 ### 11.3 Evaluation
 
-The current test is an automated script that simulates a real-world network failure to validate the system's fault tolerance and data integrity.
+The PoC has a script that runs different phases of operations with user-defined sensor states. Additionally 
+
+#### 11.3.1 Different Operation Phases
+
+An automated script simulates a network failure to validate the system's fault tolerance and scalability.
 
 The test operates in three distinct phases:
 
@@ -446,6 +444,13 @@ The test operates in three distinct phases:
    After a set duration, the script reconnects the offline sensor. It should verify that the sensor successfully uploads its entire backlog of buffered data, ensuring the system can recover from an outage without data loss.
 
 Finally, the test concludes by checking that the disconnected sensor's local buffer file is empty, providing a clear pass/fail result that confirms successful completion.
+
+#### 11.3.2 Testing Error Handling
+
+
+#### 11.3.1 Testing Scalability 
+
+
 
 ## References
 
