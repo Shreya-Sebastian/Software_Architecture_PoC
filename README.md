@@ -2,105 +2,54 @@
 
 Group project for the Software Architecture course at TU Delft (2025) by Wout Burgers, Levi Raktoe, Shreya Sebastian and Archita Selvam. The architecture report is in `report/` and the team's journals are in `journals/`. The proof of concept in `poc/` is described below.
 
-This is a Proof of Concept (PoC) demonstrating a fault-tolerant, data ingestion architecture for IoT sensors. It simulates sensors that buffer data locally during network outages and resynchronize upon reconnection with the server.
+Proof of concept for fault-tolerant ingestion of IoT sensor data. Simulated sensors buffer readings to a local file while the network is down and resend the backlog in chunks once they reconnect.
 
-The system uses a FastAPI server for ingestion, RabbitMQ as a message broker, and a separate consumer script for processing.
+A FastAPI server receives readings and publishes them to RabbitMQ; a separate consumer reads them from the queue.
 
-## Architecture
+## Components
 
-* **`ingestion_server`**: A FastAPI web server that receives sensor data via a POST request and publishes it to a RabbitMQ queue.
-* **`consumer`**: A Python script that connects to RabbitMQ, consumes messages from the queue, and 'processes' them (prints to console).
-* **`sensor_simulator`**: A Python class that simulates multiple sensors. Each sensor can be disconnected, at which point it buffers its generated data to a local `.log` file. Upon reconnection, it sends its entire backlog.
-* **`run_poc_test`**: An orchestration script that runs a three-phase simulation to test the system's fault tolerance.
-* **`rabbitmq`**: The RabbitMQ service, acting as a message broker between the server and the consumer.
-* **`Dockerfile` / `docker-compose.yml`**: Files to build and orchestrate the entire application (server, consumer, and message broker) using Docker.
-* `.gitlab-ci.yml`: A CI/CD pipeline configured for GitLab to automatically build, test, and style-check the code.
+All code is in `poc/`.
 
----
+- `ingestion_server.py`: FastAPI server; `POST /ingest/` publishes readings to a durable RabbitMQ queue.
+- `consumer.py`: reads messages from the queue and prints them.
+- `sensor_simulator.py`: a `Sensor` class that generates readings, buffers them to `buffer_<id>.log` when sending fails, and sends the backlog one chunk per iteration after reconnecting.
+- `run_poc_test.py`: starts the server and consumer, runs a disconnect/reconnect scenario and checks that every buffer was emptied.
+- `Dockerfile`, `docker-compose.yml`: run the server, consumer and RabbitMQ in containers.
 
-### Option 1: Run the Full PoC Simulation Locally
+## Run the simulation
 
-This method runs the entire simulation from your local machine, using the `run_poc_test.py` script to orchestrate all the services. It only uses Docker for the RabbitMQ message broker.
-
-**Prerequisites:**
-* Docker
-* Python 3.8+
-
-**1. Start the RabbitMQ Service**
-
-In a terminal, run the RabbitMQ container. This will provide the message broker that the local server and consumer will connect to:
+Start RabbitMQ:
 
 ```shell
 docker run -d --name rabbitmq-poc -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-``` 
+```
 
-**2. Set Up Your Python Environment**
-
-From the root of the project, create a virtual environment and install the required dependencies:
-
-```shell
-# Create a virtual environment
-python -m venv venv
-
-# Activate it (Linux/macOS)
-source venv/bin/activate
-
-# Activate it (Windows)
-.\venv\Scripts\activate
-
-# Install requirements
-pip install -r requirements.txt
-``` 
-
-
-In a new terminal, run the run_poc_test.py script (within the poc folder): 
+Install the dependencies and run the test script from `poc/`:
 
 ```shell
 cd poc
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 python run_poc_test.py
 ```
----
 
-The script will execute a three-phase test:
+The default scenario has three phases: all sensors connected, three sensors disconnected while the others keep sending, and the three reconnected to upload their backlog. Setting `TEST_SCENARIO = "staggered_failure"` in `run_poc_test.py` instead disconnects and reconnects two sensors at overlapping times.
 
-* Normal Operation: All sensors are connected and sending data.
-
-* Disruption: One sensor is disconnected. It begins buffering its data locally while the others continue to send data normally.
-
-* Resynchronization: The disconnected sensor is reconnected. It uploads its entire backlog of buffered data, which is processed alongside the real-time data from other sensors.
-
----
-
-
-### Option 2: Run All Services with Docker Compose
-
-This method runs the ingestion server, consumer, and RabbitMQ message broker in containers. This is useful if you want to run the infrastructure and test it manually or with a separate script (like the pytest files).
-
-**Prerequisites:**
-* Docker
-* Docker Compose
-
-From the root of the project, run:
+## Run with Docker Compose
 
 ```shell
+cd poc
 docker-compose up --build
 ```
 
-## Running Unit Tests
+This starts the server, consumer and RabbitMQ, for manual testing or the scalability tests below.
 
-The PoC includes unit tests for the sensor logic (`test_sensors.py`).
-The error handling test run in isolation and do not require a live RabbitMQ server.
+## Tests
 
-1.  **Run the tests:**
-    From within the poc folder, run `python -m pytest -v` to run the unit tests testing error handling and scalability.
+From `poc/`:
 
 ```shell
-# Test the sensor's error handling and buffering logic
-python -m pytest -v error_handling_tests.py
-
-# Run the scalability/load tests (requires the server to be running)
-# First, start the services (e.g., with 'docker-compose up')
-# Then, in a new terminal:
-python -m pytest -v scalability_tests.py
+python -m pytest -v error_handling_tests.py    # buffering and resync logic, no server needed
+python -m pytest -v scalability_tests.py       # load tests, needs the server running
 ```
----
