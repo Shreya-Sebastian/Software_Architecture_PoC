@@ -53,7 +53,6 @@ class Sensor:
                 os.remove(self.buffer_file)
             return
 
-        # Rewrite the file with the remaining buffer contents
         with open(self.buffer_file, "w") as f:
             for reading in self.buffer:
                 f.write(json.dumps(reading) + "\n")
@@ -94,9 +93,7 @@ class Sensor:
     def run(self):
         # Main loop for the sensor thread
         while not self._stop_event.is_set():
-            # Generate new data
             current_reading = self.generate_reading()
-            # Flag
             buffer_current_reading = False
 
             if self.is_connected:
@@ -113,26 +110,21 @@ class Sensor:
                     ]
 
                     if self._send_data(chunk):
-                        # Remove sent items from in-memory buffer
                         for _ in range(len(chunk)):
                             self.buffer.popleft()
                         print(
                             f"[{self.sensor_id}] INFO: Chunk sent. {len(self.buffer)} readings remain."
                         )
-                        # Persist this change to the file
                         self._persist_buffer()
                     else:
-                        # Stop trying for this loop
                         print(
                             f"[{self.sensor_id}] WARNING: Failed to send chunk. Aborting."
                         )
                         self.is_connected = False
-                        # Buffer the current_reading
                         buffer_current_reading = True
 
                 # If still connected (buffer was empty or chunk send was OK)
                 if self.is_connected:
-                    # try to send the current reading.
                     if not self._send_data([current_reading]):
                         print(
                             f"[{self.sensor_id}] WARNING: Connection lost. Buffering new reading."
@@ -140,16 +132,13 @@ class Sensor:
                         self.is_connected = False
                         buffer_current_reading = True
 
-            else:  # Was not connected from the start
-                print(f"[{self.sensor_id}] OFFLINE: Buffering reading.")
+            else:
                 buffer_current_reading = True
 
-            # Final buffering check
             if buffer_current_reading:
                 print(f"[{self.sensor_id}] OFFLINE: Buffering reading.")
                 self._save_to_buffer(current_reading)
 
-            # Wait before generating next reading
             time.sleep(random.uniform(1.0, 2.0))
 
     def start(self):

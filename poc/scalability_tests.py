@@ -64,16 +64,13 @@ def test_large_request():
     print(f"\nRunning test_large_request({TEST_1_MESSAGES} messages)...")
     sensor_id = "sensor-burst-test"
 
-    # Create a large batch of readings
     readings = [generate_reading(sensor_id) for _ in range(TEST_1_MESSAGES)]
     start_time = time.time()
 
-    # Send the entire batch in one request
     status = post_data_worker(readings, sensor_id)
     duration = time.time() - start_time
     print(f"Burst test completed in {duration:.2f} seconds.")
 
-    # Verify
     assert status == 200, f"Server failed to accept large burst. Status: {status}"
 
 
@@ -99,7 +96,6 @@ def test_many_sensors():
     duration = time.time() - start_time
     print(f"Concurrency test completed in {duration:.2f} seconds.")
 
-    # Verify
     success_count = sum(1 for r in results if r == 200)
 
     assert (
@@ -140,7 +136,6 @@ def test_sustained_load():
     duration = time.time() - start_time
     print(f"Sustained load test completed in {duration:.2f} seconds.")
 
-    # Verify
     total_successes = sum(results)
 
     assert (

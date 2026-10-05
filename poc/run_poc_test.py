@@ -34,7 +34,6 @@ def cleanup():
 def start_services():
     # Starts the background processes
     print("--- Starting Background Services ---")
-    # Start the FastAPI server
     server_process = subprocess.Popen(
         [
             sys.executable,
@@ -47,7 +46,6 @@ def start_services():
             str(SERVER_PORT),
         ]
     )
-    # Start the consumer
     consumer_process = subprocess.Popen(["python", "consumer.py"])
 
     # Wait for the server to be ready
@@ -131,7 +129,6 @@ def run_scenario_default(sensors):
         sensor.is_connected = True
     time.sleep(PHASE_3_RESYNC_DURATION)
 
-    # Return a list of sensors to check
     return disconnected_sensors
 
 
@@ -193,7 +190,6 @@ def main():
         print("Failed to start services. Exiting.")
         return
 
-    # Create and start sensors
     print(f"--- Creating and starting {NUM_SENSORS} sensors ---")
     sensors = [
         Sensor(sensor_id=f"sensor-{i}", server_url=SERVER_URL)
@@ -218,15 +214,12 @@ def main():
     except KeyboardInterrupt:
         print("\n Test interrupted by user")
     finally:
-        # Stop all sensor threads
         print("\n--- Stopping Sensor Threads ---")
         for sensor in sensors:
             sensor.stop()
 
-        # Stop background services
         stop_services(server_proc, consumer_proc)
 
-        # Final verification
         print("\n--- Final Verification ---")
         if not disconnected_sensors_for_verification:
             print("No sensors were disconnected during the test. Verification skipped.")

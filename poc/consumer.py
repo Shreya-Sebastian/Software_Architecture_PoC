@@ -11,7 +11,6 @@ def main():
     # Connects to RabbitMQ and consumes messages from the queue
     print("INFO: [Consumer] Waiting for messages.")
 
-    # Connection loop
     while True:
         try:
             connection = pika.BlockingConnection(
@@ -21,7 +20,6 @@ def main():
             channel.queue_declare(queue=QUEUE_NAME, durable=True)
 
             def callback(ch, method, properties, body):
-                # Callback function to process a message
                 data = json.loads(body)
                 sensor_id = data.get("sensor_id", "N/A")
                 timestamp = data.get("timestamp", "N/A")
@@ -36,7 +34,6 @@ def main():
             channel.basic_qos(prefetch_count=1)
             channel.basic_consume(queue=QUEUE_NAME, on_message_callback=callback)
 
-            # Start consuming
             channel.start_consuming()
 
         except pika.exceptions.AMQPConnectionError:

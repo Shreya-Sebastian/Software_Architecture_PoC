@@ -22,7 +22,6 @@ QUEUE_NAME = "sensor_data_queue"
 
 
 def get_rabbitmq_connection():
-    # Establishes a connection to RabbitMQ
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
     return connection
 
@@ -37,7 +36,6 @@ def startup_event():
     try:
         connection = get_rabbitmq_connection()
         channel = connection.channel()
-        # Declare a durable queue
         channel.queue_declare(queue=QUEUE_NAME, durable=True)
         connection.close()
         print("INFO: RabbitMQ queue 'sensor_data_queue' is ready.")
