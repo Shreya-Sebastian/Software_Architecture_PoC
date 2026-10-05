@@ -1,5 +1,7 @@
 # Smarter Home - Data Ingestion PoC
 
+Group project for the Software Architecture course at TU Delft (2025) by Wout Burgers, Levi Raktoe, Shreya Sebastian and Archita Selvam. The architecture report is in `report/` and the team's journals are in `journals/`. The proof of concept in `poc/` is described below.
+
 This is a Proof of Concept (PoC) demonstrating a fault-tolerant, data ingestion architecture for IoT sensors. It simulates sensors that buffer data locally during network outages and resynchronize upon reconnection with the server.
 
 The system uses a FastAPI server for ingestion, RabbitMQ as a message broker, and a separate consumer script for processing.
